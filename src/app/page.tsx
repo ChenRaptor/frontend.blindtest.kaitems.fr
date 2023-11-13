@@ -71,7 +71,7 @@ export default function Home() {
 
             <div className="flex items-end flex-col">
               <h3 className="text-2xl font-semibold leading-7 text-gray-900">Player</h3>
-              <Avatar>
+              {/* <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
@@ -86,7 +86,7 @@ export default function Home() {
               <Avatar>
                 <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              </Avatar> */}
             </div>
 
 
@@ -97,7 +97,9 @@ export default function Home() {
           <Carousel mutate={setOptionCarousel} value={optionCarousel} config={carouselConfig}/>
         </div>
         <div className="px-4 py-4 sm:px-6 text-center">
-          <p>{carouselConfig[optionCarousel].phrase}</p>
+          <h2 className="mt-10 text-2xl font-bold tracking-tight drop-shadow-2xl sm:text-3xl text-primary-base">
+            {carouselConfig[optionCarousel].phrase}
+          </h2>
         </div>
       </div>
     </main>
