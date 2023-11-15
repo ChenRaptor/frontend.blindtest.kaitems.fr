@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import FormGroup, { FormGroupInterface } from "../FormGroup/FormGroup"
 import styles from "./ActionPanel.module.css"
-import { MouseEventHandler, useRef } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 // Inteface
 export interface ActionPanelConfig {
   formTitle: string
@@ -21,16 +21,22 @@ export interface ActionPanelConfig {
 export interface ActionPanelProps {
   config: ActionPanelConfig
   active: boolean
-  onClose: (event:any) => void
+  onSubmit: (values: z.infer<z.ZodObject<any, "strip", z.ZodTypeAny, {
+      [x: string]: any;
+  }, {
+      [x: string]: any;
+  }>>) => any
+  onOverlay?: (event:any) => void
+  onCancel?: (event:any) => void
 }
 
-export const prevent = (fn: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, ...params: any[]) => void) => {
-  return (event: React.MouseEvent<HTMLDivElement, MouseEvent>, ...params: any[]) => {
+export const prevent = (fn: (event: React.MouseEvent<HTMLElement, MouseEvent>, ...params: any[]) => void) => {
+  return (event: React.MouseEvent<HTMLElement, MouseEvent>, ...params: any[]) => {
     event.currentTarget === event.target && fn && fn(event, ...params);
   };
 };
 
-export default function ActionPanels({config, active, onClose} : ActionPanelProps) {
+export default function ActionPanels({config, active, onSubmit, onOverlay, onCancel} : ActionPanelProps) {
   const defaultValues : any = {};
   const defaultSchema : any = {};
 
@@ -60,34 +66,31 @@ export default function ActionPanels({config, active, onClose} : ActionPanelProp
     defaultValues: defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-  }
-  
+  // Créer wrapper form
   return (
     <>
     { active &&
-    <div className={styles['overlay']} onClick={prevent(onClose)}>
-      <div className={styles['box']}>
-        <div className={styles['box-content']}>
-          <h3 className={styles['title']}>{config.formTitle}</h3>
-          <div className={styles['description']}>
-            <p>{config.formDescription}</p>
-          </div>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className={styles.form}>
-              {config.formFields.map((formField, key) => (
-                <FormGroup config={formField} form={form} key={`formField-${key}`}/>
-              ))}
-              <div className={styles['action-button']}>
-                <Button onClick={onClose}>{config.formCancel}</Button>
-                <Button type="submit">{config.formSubmit}</Button>
-              </div>
-            </form>
-          </Form>
-        </div>
+      <div className={styles['overlay']} onClick={onOverlay && prevent(onOverlay)}>
+        <Card>
+          <CardHeader>
+            <CardTitle>{config.formTitle}</CardTitle>
+            <CardDescription>{config.formDescription}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className={styles.form}>
+                {config.formFields.map((formField, key) => (
+                  <FormGroup config={formField} form={form} key={`formField-${key}`}/>
+                ))}
+                <div className={styles['action-button']}>
+                  <Button variant="outline" onClick={onCancel}>{config.formCancel}</Button>
+                  <Button type="submit">{config.formSubmit}</Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
       </div>
-    </div>
     }
     </>
   )

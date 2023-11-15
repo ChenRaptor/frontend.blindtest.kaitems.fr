@@ -1,5 +1,5 @@
 .overlay {
-	@apply absolute top-0 bottom-0 left-0 right-0 z-10 bg-primary-200 flex items-center justify-center
+	@apply absolute top-0 bottom-0 left-0 right-0 z-10 bg-primary-200 flex items-center justify-center px-5
 }
 .box {
 	@apply bg-primary-50 shadow-xl sm:rounded-lg w-fit border border-primary-500 z-20
