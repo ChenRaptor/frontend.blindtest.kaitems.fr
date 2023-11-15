@@ -2,10 +2,16 @@
 import Carousel from "./components/Carousel/Carousel";
 import { v4 as uuidv4 } from 'uuid';
 import QuickResponseCode from "./components/QuickResponseCode/QuickResponseCode";
-import { useState } from "react";
+import { MouseEventHandler, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
+import DescriptionBoard from "./components/DescriptionBoard/DescriptionBoard";
+import { Button } from "@/components/ui/button";
+import { useBoolean } from 'usehooks-ts'
+import Link from "next/link";
 
 export interface carouselConfigItem {
+  id: number
   title: string
   type?: string
   description: string
@@ -17,89 +23,92 @@ export type CarouselConfig = Array<carouselConfigItem>
 
 const carouselConfig : CarouselConfig = [
   {
+    id: 0,
     title: "Film",
     type: "Musique",
     description: "lorem",
     phrase: "Blindtest sur les musiques de film"
   },
   {
+    id: 1,
     title: "Série",
     type: "Musique",
     description: "lorem",
     phrase: "Blindtest sur les musiques de série"
   },
   {
+    id: 2,
     title: "Film",
     type: "Réplique",
     description: "lorem",
     phrase: "Blindtest sur les répliques de film"
   },
   {
+    id: 3,
     title: "Série",
     type: "Réplique",
     description: "lorem",
     phrase: "Blindtest sur les répliques de série"
   },
   {
+    id: 4,
     title: "Aléatoire",
     description: "lorem",
     phrase: "Blindtest aléatoire"
   }
 ]
 
-export default function Home() {
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/room/${uuidv4()}/phone`;
+interface QRCode {
+  url: string
+}
 
-  const [optionCarousel, setOptionCarousel] = useState<number>(0)
+export default function Home() {
+
+  const [quickResponseCode, setQuickResponseCode] = useState<QRCode | null>(null)
+  const { value: startGame, toggle: toggleStartGame } = useBoolean(false)
+
+  const [option, setOption] = useState<number>(0)
+
+  const handlerQRCode : MouseEventHandler<HTMLElement> = () => {
+    setQuickResponseCode({
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/room/${uuidv4()}/phone?type=${option}`
+    })
+  }
+
+  const handlerStartGame : MouseEventHandler<HTMLElement> = () => {
+    toggleStartGame()
+  }
+
 
   return (
     <main className='h-full w-full'>
       <div className="flex flex-col h-full">
         <div className="mx-auto max-w-[120rem] px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center">
-          <div className="py-20 grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-
-
+          <div className="py-20 grid grid-cols-1 gap-20 lg:grid-cols-3">
             <div className="flex items-start flex-col">
-              <h3 className="text-2xl font-semibold leading-7 text-gray-900">{carouselConfig[optionCarousel].title}{carouselConfig[optionCarousel].type}</h3>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">{carouselConfig[optionCarousel].description}</p>
+              <DescriptionBoard config={carouselConfig[option]} party={!!quickResponseCode} handlerStartGame={handlerStartGame} startGame={startGame}/>
             </div>
-
-            <div className="flex items-center justify-center w-80">
-              <QuickResponseCode url={url}/>
+            <div className="flex items-center justify-center xl:w-[384px]">
+              {quickResponseCode ?
+                <QuickResponseCode url={quickResponseCode.url}/>
+              :
+                <Button onClick={handlerQRCode}>Générer la partie</Button>
+              }
             </div>
-
             <div className="flex items-end flex-col">
-              <h3 className="text-2xl font-semibold leading-7 text-gray-900">Player</h3>
-              {/* <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar> */}
+              <PlayerBoard/>
             </div>
-
-
-            
           </div>
+
         </div>
-        <div className="px-4 py-4 sm:px-6">
-          <Carousel mutate={setOptionCarousel} value={optionCarousel} config={carouselConfig}/>
+        <div className="px-4 py-4 sm:p-6">
+          <Carousel mutate={setOption} value={option} config={carouselConfig}/>
         </div>
         <div className="px-4 py-4 sm:px-6 text-center">
-          <h2 className="mt-10 text-2xl font-bold tracking-tight drop-shadow-2xl sm:text-3xl text-primary-base">
-            {carouselConfig[optionCarousel].phrase}
-          </h2>
+          {quickResponseCode?.url &&
+            <Link href={quickResponseCode.url}>Lien</Link>
+          }
         </div>
       </div>
     </main>

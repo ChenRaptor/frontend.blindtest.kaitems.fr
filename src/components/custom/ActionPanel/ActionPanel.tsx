@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import FormGroup, { FormGroupInterface } from "../FormGroup/FormGroup"
 import styles from "./ActionPanel.module.css"
-import { MouseEventHandler } from "react"
+import { MouseEventHandler, useRef } from "react"
 // Inteface
 export interface ActionPanelConfig {
   formTitle: string
@@ -21,16 +21,14 @@ export interface ActionPanelConfig {
 export interface ActionPanelProps {
   config: ActionPanelConfig
   active: boolean
-  onClose: () => void
+  onClose: (event:any) => void
 }
 
-export function prevent(fn?: any, defaultOnly?: any) {
-  return (e: { preventDefault: () => any; stopPropagation: () => any }, ...params : any) => {
-      e && e.preventDefault()
-      !defaultOnly && e && e.stopPropagation()
-      fn && fn(e, ...params)
-  }
-}
+export const prevent = (fn: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, ...params: any[]) => void) => {
+  return (event: React.MouseEvent<HTMLDivElement, MouseEvent>, ...params: any[]) => {
+    event.currentTarget === event.target && fn && fn(event, ...params);
+  };
+};
 
 export default function ActionPanels({config, active, onClose} : ActionPanelProps) {
   const defaultValues : any = {};
@@ -69,8 +67,8 @@ export default function ActionPanels({config, active, onClose} : ActionPanelProp
   return (
     <>
     { active &&
-    <div className={styles['overlay']} onClick={onClose}>
-      <div className={styles['box']} onClick={prevent()}>
+    <div className={styles['overlay']} onClick={prevent(onClose)}>
+      <div className={styles['box']}>
         <div className={styles['box-content']}>
           <h3 className={styles['title']}>{config.formTitle}</h3>
           <div className={styles['description']}>

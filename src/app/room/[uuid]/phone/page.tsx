@@ -1,32 +1,23 @@
+"use client"
 import ActionPanels, { ActionPanelConfig } from "@/components/custom/ActionPanel/ActionPanel";
 import { useSocket } from "@/providers/socket-provider";
 
 const config : ActionPanelConfig = {
-  formTitle: "Upload a project",
+  formTitle: "Créer son nom d'utilisateur",
   formDescription: "Change the email address you want associated with your account.",
   formSubmit: "Submit",
   formCancel: "Cancel",
   formFields: [
     {
-      name: "projectName",
+      name: "username",
       type: "text",
-      label: "Project name",
-      placeholder: "Project name",
+      label: "Nom d'utilisateur",
+      placeholder: "Pseudonyme",
       schema: {
         min: 2,
         max: 10
       }
-    },
-    {
-      name: "projectDescription",
-      type: "text",
-      label: "Project description",
-      placeholder: "Project description",
-      schema: {
-        min: 5,
-        max: 12
-      }
-    },
+    }
   ]
 }
 
@@ -36,7 +27,7 @@ export default function Phone() {
   
   return (
     <div>
-      <ActionPanels config={config} active={true} onClose={() => console.log("close")} />
+      <ActionPanels config={config} active={true} onClose={() => {console.log("overlay")}} />
     </div>
   )
 }
