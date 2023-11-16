@@ -2,8 +2,7 @@
 import ActionPanels, { ActionPanelConfig } from "@/components/custom/ActionPanel/ActionPanel";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/providers/socket-provider";
-import { useEffect, useState } from "react";
-import { useBoolean } from "usehooks-ts";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const config : ActionPanelConfig = {
   formTitle: "Créer son nom d'utilisateur",
@@ -24,18 +23,62 @@ const config : ActionPanelConfig = {
   ]
 }
 
+interface PhonePageProps {
+  params: {
+    uuid: string
+  }
+}
 
-export default function Phone() {
+interface User {
+  username?: string
+}
+
+interface CustomSocket {
+  socket_id: string;
+  pseudo?: string;
+}
+
+interface Room {
+  id: string;
+  socketNumber: number;
+  sockets: CustomSocket[];
+}
+
+
+const enterRoomEmiter = (params: PhonePageProps["params"], user?: User) => ({
+  room_id: params.uuid,
+  object: {
+    type: 'player', 
+    pseudo: user?.username 
+  }
+})
+
+const userJoinRoomListener = (setRoomData: Dispatch<SetStateAction<Room | undefined>>) => ({newPlayer, room} : {newPlayer: any, room: Room}) => {
+  console.log(room)
+  setRoomData(room);
+  console.log(`${newPlayer.pseudo} vient de joindre le salon. Il y a maintenant ${room.socketNumber} personnes dans le salon.`);
+};
+
+export default function Phone({ params }: PhonePageProps) {
   const { socket } = useSocket();
 
-  const [user, setUser] = useState<any>()
+  const [user, setUser] = useState<User>()
+  const [roomData, setRoomData] = useState<Room>();
   const [actionPanel, setActionPanel] = useState<boolean>(true)
 
-  useEffect(() => {
-    console.log(user)
-  },[user])
+  const socketInitializer = async () => {
+    // Socket Emit
+    socket.emit("enterRoom", enterRoomEmiter(params, user));
 
-  const onSubmit = (values: {username?: string}) => {
+    // Socket On
+    socket.on("userJoinRoom", userJoinRoomListener(setRoomData));
+  }
+
+  useEffect(() => {
+    user && socketInitializer();
+  }, [user, socket]);
+
+  const onSubmit = (values: User) => {
     setUser(values)
     setActionPanel(false)
   }

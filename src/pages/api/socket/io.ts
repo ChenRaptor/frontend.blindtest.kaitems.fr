@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/type"
+import { handleEnterRoom } from "@/lib/socket";
 
 export default function SocketHandler( req: NextApiRequest, res: NextApiResponseServerIo ) {
 
@@ -13,7 +14,7 @@ export default function SocketHandler( req: NextApiRequest, res: NextApiResponse
   res.socket.server.io = io;
 
   const onConnection = (socket: any) => {
-
+    socket.on('enterRoom', handleEnterRoom(io, socket));
   };
 
   io.on("connection", onConnection);
