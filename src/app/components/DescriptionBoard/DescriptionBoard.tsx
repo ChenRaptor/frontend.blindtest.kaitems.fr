@@ -8,9 +8,11 @@ interface DescriptionBoardProps {
   party: boolean
   handlerStartGame: MouseEventHandler<HTMLElement>
   startGame: boolean
+  count: number
 }
 
-export default function DescriptionBoard({config, party, handlerStartGame, startGame} : DescriptionBoardProps) {
+export default function DescriptionBoard({config, party, handlerStartGame, startGame, count} : DescriptionBoardProps) {
+
   return (
     <Card className="h-full w-full overflow-hidden flex flex-col">
       <CardHeader className="bg-primary-100">
@@ -18,9 +20,9 @@ export default function DescriptionBoard({config, party, handlerStartGame, start
         <CardDescription>&nbsp;</CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center h-full">
-        {startGame &&
-          <Chrono/>
-        }
+      {startGame &&
+        <Chrono count={count}/>
+      }
       </CardContent>
       <CardFooter className="flex justify-between min-h-[60px]">
         {party && 

@@ -46,7 +46,7 @@ interface Room {
 
 
 const enterRoomEmiter = (params: PhonePageProps["params"], user?: User) => ({
-  room_id: params.uuid,
+  room: params.uuid,
   object: {
     type: 'player', 
     pseudo: user?.username 
@@ -56,7 +56,7 @@ const enterRoomEmiter = (params: PhonePageProps["params"], user?: User) => ({
 const userJoinRoomListener = (setRoomData: Dispatch<SetStateAction<Room | undefined>>) => ({newPlayer, room} : {newPlayer: any, room: Room}) => {
   console.log(room)
   setRoomData(room);
-  console.log(`${newPlayer.pseudo} vient de joindre le salon. Il y a maintenant ${room.socketNumber} personnes dans le salon.`);
+  console.log(`${newPlayer.username} vient de joindre le salon. Il y a maintenant ${room.socketNumber} personnes dans le salon.`);
 };
 
 export default function Phone({ params }: PhonePageProps) {

@@ -2,13 +2,14 @@
 import Carousel from "./components/Carousel/Carousel";
 import { v4 as uuidv4 } from 'uuid';
 import QuickResponseCode from "./components/QuickResponseCode/QuickResponseCode";
-import { MouseEventHandler, useState } from "react";
+import { MouseEventHandler, useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
 import DescriptionBoard from "./components/DescriptionBoard/DescriptionBoard";
 import { Button } from "@/components/ui/button";
-import { useBoolean } from 'usehooks-ts'
+import { useBoolean, useCountdown } from 'usehooks-ts'
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export interface carouselConfigItem {
   id: number
@@ -67,17 +68,29 @@ export default function Home() {
   const [quickResponseCode, setQuickResponseCode] = useState<QRCode | null>(null)
   const { value: startGame, toggle: toggleStartGame } = useBoolean(false)
 
+  const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
+    countStart: 5,
+    intervalMs: 1000,
+  })
+
+  const link = useMemo(() => `${process.env.NEXT_PUBLIC_SITE_URL}/room/${uuidv4()}`,[])
+
   const [option, setOption] = useState<number>(0)
 
   const handlerQRCode : MouseEventHandler<HTMLElement> = () => {
     setQuickResponseCode({
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/room/${uuidv4()}/phone?type=${option}`
+      url: `${link}/phone?type=${option}`
     })
   }
 
   const handlerStartGame : MouseEventHandler<HTMLElement> = () => {
+    startGame ? resetCountdown() : startCountdown()
     toggleStartGame()
   }
+
+  useEffect(() => {
+    count === 0 && redirect(`${link}/terminal?type=${option}`)
+  },[count])
 
 
   return (
@@ -87,7 +100,7 @@ export default function Home() {
 
           <div className="py-20 grid grid-cols-1 gap-20 lg:grid-cols-3">
             <div className="flex items-start flex-col">
-              <DescriptionBoard config={carouselConfig[option]} party={!!quickResponseCode} handlerStartGame={handlerStartGame} startGame={startGame}/>
+              <DescriptionBoard config={carouselConfig[option]} party={!!quickResponseCode} handlerStartGame={handlerStartGame} startGame={startGame} count={count}/>
             </div>
             <div className="flex items-center justify-center xl:w-[384px]">
               {quickResponseCode ?

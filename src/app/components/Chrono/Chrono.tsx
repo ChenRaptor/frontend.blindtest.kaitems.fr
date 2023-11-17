@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useCountdown } from 'usehooks-ts';
 
-export default function Chrono() {
-  const [seconds, setSeconds] = useState(15);
+interface ChronoProps {
+  count: number
+}
 
-  
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (seconds > 0) {
-        setSeconds(seconds - 1);
-      }
-    }, 1000);
-
-    // Nettoyer l'intervalle lors de la suppression du composant
-    return () => clearInterval(interval);
-  }, [seconds]);
-
+export default function Chrono({count}: ChronoProps) {
   return (
-    <p className='text-5xl'>{seconds}</p>
+    <p className='text-5xl'>{count}</p>
   );
 };
