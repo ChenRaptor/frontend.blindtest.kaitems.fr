@@ -72,6 +72,7 @@ export default function Phone({ params }: PhonePageProps) {
 
     // Socket On
     socket.on("userJoinRoom", userJoinRoomListener(setRoomData));
+    socket.on("ping", (val) => console.log(val));
   }
 
   useEffect(() => {

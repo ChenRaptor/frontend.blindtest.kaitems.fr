@@ -25,8 +25,8 @@ export default function Terminal({ params }: PhonePageProps) {
 
     // Socket On
     socket.on("terminalJoinRoom", ({room}) => console.log(room));
+    socket.on("ping", (val) => console.log(val));
   }
-
   useEffect(() => {
     socket && socketInitializer();
   }, [socket]);
