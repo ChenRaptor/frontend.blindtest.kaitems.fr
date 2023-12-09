@@ -106,7 +106,7 @@ export default function Home() {
               {quickResponseCode ?
                 <QuickResponseCode url={quickResponseCode.url}/>
                 :
-                <Button onClick={handlerQRCode}>Générer la partie67</Button>
+                <Button onClick={handlerQRCode}>Générer la partie</Button>
               }
             </div>
             <div className="flex items-end flex-col">
