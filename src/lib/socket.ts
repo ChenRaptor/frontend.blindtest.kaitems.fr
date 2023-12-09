@@ -82,9 +82,9 @@ export const handleEnterRoom = (io: Server, socket: Socket) => (
         .then(res => {
           socket.emit('terminalJoinRoom', terminalJoinRoomEmitter(room, getSocketsData(res)));
         })
-      setInterval(() => {
-        io.to(room).emit('ping', "Server respond!");
-      }, 5000);
+      // setInterval(() => {
+      //   io.to(room).emit('ping', "Server respond!");
+      // }, 5000);
     }
 
 

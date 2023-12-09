@@ -10,3 +10,19 @@ export type NextApiResponseServerIo = NextApiResponse & {
   }
 }
 
+export interface CustomSocket {
+  id: string;
+  username?: string;
+}
+
+export interface Room {
+  id: string;
+  socketNumber: number;
+  sockets: CustomSocket[];
+}
+
+export interface PhonePageProps {
+  params: {
+    uuid: string
+  }
+}

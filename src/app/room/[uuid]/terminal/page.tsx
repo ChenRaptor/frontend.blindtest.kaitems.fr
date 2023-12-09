@@ -1,34 +1,23 @@
 "use client"
 
 import { useSocket } from "@/providers/socket-provider";
+import { PhonePageProps } from "@/type";
 import { useEffect } from "react";
-
-interface PhonePageProps {
-  params: {
-    uuid: string
-  }
-}
-
-const enterRoomEmiter = (params: PhonePageProps["params"]) => ({
-  room: params.uuid,
-  object: {
-    type: 'terminal'
-  }
-})
 
 export default function Terminal({ params }: PhonePageProps) {
   const { socket } = useSocket();
 
-  const socketInitializer = async () => {
+  const socketActions = async () => {
     // Socket Emit
-    socket.emit("enterRoom", enterRoomEmiter(params));
+    socket.emit("launchGame", {room: params.uuid});
 
     // Socket On
     socket.on("terminalJoinRoom", ({room}) => console.log(room));
-    socket.on("ping", (val) => console.log(val));
+    socket.on("game-status", ({gameStatus}) => console.log(gameStatus));
+    // socket.on("ping", (val) => console.log(val));
   }
   useEffect(() => {
-    socket && socketInitializer();
+    socket && socketActions();
   }, [socket]);
 
   return (

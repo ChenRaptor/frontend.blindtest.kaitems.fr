@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { useBoolean, useCountdown } from 'usehooks-ts'
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { useSocket } from "@/providers/socket-provider";
+import { PhonePageProps } from "@/type";
 
 export interface carouselConfigItem {
   id: number
@@ -63,8 +65,16 @@ interface QRCode {
   url: string
 }
 
+const enterRoomEmiter = (params: PhonePageProps["params"]) => ({
+  room: params.uuid,
+  object: {
+    type: 'terminal'
+  }
+})
+
 export default function Home() {
 
+  const { socket } = useSocket();
   const [quickResponseCode, setQuickResponseCode] = useState<QRCode | null>(null)
   const { value: startGame, toggle: toggleStartGame } = useBoolean(false)
 
@@ -73,14 +83,17 @@ export default function Home() {
     intervalMs: 1000,
   })
 
-  const link = useMemo(() => `${process.env.NEXT_PUBLIC_SITE_URL}/room/${uuidv4()}`,[])
+  const link = useMemo(() => uuidv4(),[])
 
   const [option, setOption] = useState<number>(0)
 
   const handlerQRCode : MouseEventHandler<HTMLElement> = () => {
     setQuickResponseCode({
-      url: `${link}/phone?type=${option}`
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/room/${link}/phone?type=${option}`
     })
+    if (socket) {
+      socket.emit("enterRoom", enterRoomEmiter({uuid: link}));
+    }
   }
 
   const handlerStartGame : MouseEventHandler<HTMLElement> = () => {
@@ -89,10 +102,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    count === 0 && redirect(`${link}/terminal?type=${option}`)
-  },[count])
+    count === 0 && redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/room/${link}/terminal?type=${option}`)
+  },[count, option])
 
 
+  // TODO : Add an exit button pour select a new game type and generate a new QRCode on change option
+  
   return (
     <main className='h-full w-full'>
       <div className="flex flex-col h-full">
@@ -127,5 +142,3 @@ export default function Home() {
     </main>
   )
 }
-
-

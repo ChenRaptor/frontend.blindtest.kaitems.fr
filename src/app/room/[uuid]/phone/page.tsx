@@ -2,6 +2,7 @@
 import ActionPanels, { ActionPanelConfig } from "@/components/custom/ActionPanel/ActionPanel";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/providers/socket-provider";
+import { PhonePageProps, Room } from "@/type";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const config : ActionPanelConfig = {
@@ -23,27 +24,9 @@ const config : ActionPanelConfig = {
   ]
 }
 
-interface PhonePageProps {
-  params: {
-    uuid: string
-  }
-}
-
 interface User {
   username?: string
 }
-
-interface CustomSocket {
-  socket_id: string;
-  pseudo?: string;
-}
-
-interface Room {
-  id: string;
-  socketNumber: number;
-  sockets: CustomSocket[];
-}
-
 
 const enterRoomEmiter = (params: PhonePageProps["params"], user?: User) => ({
   room: params.uuid,
@@ -72,7 +55,7 @@ export default function Phone({ params }: PhonePageProps) {
 
     // Socket On
     socket.on("userJoinRoom", userJoinRoomListener(setRoomData));
-    socket.on("ping", (val) => console.log(val));
+    socket.on("game-status", ({gameStatus}) => console.log(gameStatus));
   }
 
   useEffect(() => {

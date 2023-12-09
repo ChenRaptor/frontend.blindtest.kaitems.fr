@@ -15,7 +15,7 @@ export default function Carousel({mutate, value, config} : CarouselProps) {
           <li
             key={carouselItemKey}
             className="col-span-1 flex flex-col text-center h-[14rem] w-[5rem] bg-primary-50 shadow relative select-none"
-            onClick={() => mutate(carouselItem.id)}
+            onClick={() => {console.log(carouselItem.id), mutate(carouselItem.id)}}
           >
             <div className="flex flex-1 flex-col p-8">
               <div className="relative bottom-[-3rem] right-[7.4rem]">
