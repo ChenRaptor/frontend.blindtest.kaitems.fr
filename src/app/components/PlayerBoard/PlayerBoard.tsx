@@ -46,22 +46,22 @@ export default function PlayerBoard() {
       </CardHeader>
       <CardContent className="px-6 pb-2">
         <ul role="list" className="divide-y divide-primary-300">
-        {people.map((person) => (
-          <li key={person.email} className="flex justify-between gap-x-6 py-5">
-            <div className="flex items-center justify-center min-w-0 gap-x-4">
-              <Avatar>
-                <AvatarImage src={person.imageUrl} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex items-center justify-center">
-                <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
+          {people.map((person) => (
+            <li key={person.email} className="flex justify-between gap-x-6 py-5">
+              <div className="flex items-center justify-center min-w-0 gap-x-4">
+                <Avatar>
+                  <AvatarImage src={person.imageUrl} alt="@shadcn" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex items-center justify-center">
+                  <p className="text-sm font-semibold leading-6 text-gray-900">{person.name}</p>
+                </div>
               </div>
-            </div>
-            <div className="min-w-0 flex items-center justify-center">
-              <p className="text-sm font-semibold leading-6 text-gray-900">{person.state}</p>
-            </div>
-          </li>
-        ))}
+              <div className="min-w-0 flex items-center justify-center">
+                <p className="text-sm font-semibold leading-6 text-gray-900">{person.state}</p>
+              </div>
+            </li>
+          ))}
         </ul>
       </CardContent>
     </Card>

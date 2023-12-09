@@ -20,9 +20,9 @@ export default function DescriptionBoard({config, party, handlerStartGame, start
         <CardDescription>&nbsp;</CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center h-full">
-      {startGame &&
-        <Chrono count={count}/>
-      }
+        {startGame &&
+          <Chrono count={count}/>
+        }
       </CardContent>
       <CardFooter className="flex justify-between min-h-[60px]">
         {party && 
@@ -30,7 +30,7 @@ export default function DescriptionBoard({config, party, handlerStartGame, start
           {/* <Button variant="outline">Quitter la room</Button> */}
           {startGame ?
             <Button variant="outline" onClick={handlerStartGame}>Annuler le lancement</Button>
-          :
+            :
             <Button onClick={handlerStartGame}>Lancer la partie</Button>
           }
         </>

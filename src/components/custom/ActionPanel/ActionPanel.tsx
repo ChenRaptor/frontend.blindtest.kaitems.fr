@@ -69,29 +69,29 @@ export default function ActionPanels({config, active, onSubmit, onOverlay, onCan
   // Créer wrapper form
   return (
     <>
-    { active &&
-      <div className={styles['overlay']} onClick={onOverlay && prevent(onOverlay)}>
-        <Card>
-          <CardHeader>
-            <CardTitle>{config.formTitle}</CardTitle>
-            <CardDescription>{config.formDescription}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className={styles.form}>
-                {config.formFields.map((formField, key) => (
-                  <FormGroup config={formField} form={form} key={`formField-${key}`}/>
-                ))}
-                <div className={styles['action-button']}>
-                  <Button variant="outline" onClick={onCancel}>{config.formCancel}</Button>
-                  <Button type="submit">{config.formSubmit}</Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
-    }
+      { active &&
+        <div className={styles['overlay']} onClick={onOverlay && prevent(onOverlay)}>
+          <Card>
+            <CardHeader>
+              <CardTitle>{config.formTitle}</CardTitle>
+              <CardDescription>{config.formDescription}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className={styles.form}>
+                  {config.formFields.map((formField, key) => (
+                    <FormGroup config={formField} form={form} key={`formField-${key}`}/>
+                  ))}
+                  <div className={styles['action-button']}>
+                    <Button variant="outline" onClick={onCancel}>{config.formCancel}</Button>
+                    <Button type="submit">{config.formSubmit}</Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+      }
     </>
   )
 }

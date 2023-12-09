@@ -94,10 +94,10 @@ export default function Phone({ params }: PhonePageProps) {
   return (
     <div>
       <ActionPanels
-      config={config}
-      active={actionPanel}
-      onSubmit={onSubmit}
-      onCancel={onCancel}
+        config={config}
+        active={actionPanel}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
       />
       <p>{user?.username}</p>
       <div className="px-4 grid grid-cols-2 gap-4">

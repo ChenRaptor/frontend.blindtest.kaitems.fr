@@ -105,7 +105,7 @@ export default function Home() {
             <div className="flex items-center justify-center xl:w-[384px]">
               {quickResponseCode ?
                 <QuickResponseCode url={quickResponseCode.url}/>
-              :
+                :
                 <Button onClick={handlerQRCode}>Générer la partie868</Button>
               }
             </div>

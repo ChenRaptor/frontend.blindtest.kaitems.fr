@@ -22,7 +22,7 @@ const getSocketsInRoom = async (io: Server, room: string) => {
 
 const getSocketsData = (res: any[]) => {
   return res.filter((socket) => socket.data.hasOwnProperty('user'))
-  .map((socket) => socket.data.user)
+    .map((socket) => socket.data.user)
 }
 
 const userJoinRoomEmitter = (socket: Socket, room: string, users: any[]) => ({
@@ -72,16 +72,16 @@ export const handleEnterRoom = (io: Server, socket: Socket) => (
     if (object.type === 'player') {
       extendSocketData(socket, object)
       getSocketsInRoom(io, room)
-      .then(res => {
-        io.to(room).emit('userJoinRoom', userJoinRoomEmitter(socket, room, getSocketsData(res)));
-      })
+        .then(res => {
+          io.to(room).emit('userJoinRoom', userJoinRoomEmitter(socket, room, getSocketsData(res)));
+        })
     }
 
     if (object.type === 'terminal') {
       getSocketsInRoom(io, room)
-      .then(res => {
-        socket.emit('terminalJoinRoom', terminalJoinRoomEmitter(room, getSocketsData(res)));
-      })
+        .then(res => {
+          socket.emit('terminalJoinRoom', terminalJoinRoomEmitter(room, getSocketsData(res)));
+        })
       setInterval(() => {
         io.to(room).emit('ping', "Server respond!");
       }, 5000);

@@ -1,60 +1,60 @@
 "use client"
 
 import {
-    createContext,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from "react"
 import { Socket } from "socket.io";
 
 import io from "socket.io-client";
 
 type SocketContextType = {
-    socket: any | null;
+  socket: any | null;
 }
 
 const SocketContext = createContext<SocketContextType>({
-    socket: null,
+  socket: null,
 })
 
 export const useSocket : () => {socket: Socket} = () => {
-    return useContext(SocketContext);
+  return useContext(SocketContext);
 }
 
 
 export const SocketProvider = ({
-    children
+  children
 }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) => {
 
-    const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<any>(null);
 
-    const socketInstance = useMemo(() => io(), [])
+  const socketInstance = useMemo(() => io(), [])
 
-    useEffect(() => {
-        if(socketInstance) {
-            socketInitializer(socketInstance);
-        }
-    }, [socketInstance])
-
-    const socketInitializer = async (socketInstance: any) => {
-        await fetch("/api/socket/io");
-        
-        setSocket(socketInstance);
-
-        return () => {
-            socketInstance.disconnect();
-        }
+  useEffect(() => {
+    if(socketInstance) {
+      socketInitializer(socketInstance);
     }
+  }, [socketInstance])
+
+  const socketInitializer = async (socketInstance: any) => {
+    await fetch("/api/socket/io");
+    
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    }
+  }
 
 
 
-    return (
-        <SocketContext.Provider value={{ socket }}>
-            {children}
-        </SocketContext.Provider>
-    )
+  return (
+    <SocketContext.Provider value={{ socket }}>
+      {children}
+    </SocketContext.Provider>
+  )
 }
