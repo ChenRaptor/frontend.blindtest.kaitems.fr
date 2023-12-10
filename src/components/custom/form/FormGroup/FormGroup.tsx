@@ -3,20 +3,7 @@
 // Import
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-// Inteface
-export interface FormGroupInterface {
-  name: string
-  type: string
-  label: string
-  description?: string
-  placeholder: string
-  defaultValue?: string
-  schema: {
-    min: number,
-    max: number
-  }
-}
+import { FormGroupInterface } from "../type"
 
 export default function FormGroup({config, form} : {config: FormGroupInterface, form: any}) {
   return (

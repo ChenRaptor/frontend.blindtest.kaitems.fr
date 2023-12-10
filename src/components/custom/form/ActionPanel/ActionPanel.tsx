@@ -6,29 +6,10 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
-import FormGroup, { FormGroupInterface } from "../FormGroup/FormGroup"
 import styles from "./ActionPanel.module.css"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-// Inteface
-export interface ActionPanelConfig {
-  formTitle: string
-  formDescription: string
-  formSubmit: string
-  formCancel: string
-  formFields: Array<FormGroupInterface>
-}
-
-export interface ActionPanelProps {
-  config: ActionPanelConfig
-  active: boolean
-  onSubmit: (values: z.infer<z.ZodObject<any, "strip", z.ZodTypeAny, {
-      [x: string]: any;
-  }, {
-      [x: string]: any;
-  }>>) => any
-  onOverlay?: (event:any) => void
-  onCancel?: (event:any) => void
-}
+import { ActionPanelProps } from "../type"
+import FormGroup from "../FormGroup/FormGroup"
 
 export const prevent = (fn: (event: React.MouseEvent<HTMLElement, MouseEvent>, ...params: any[]) => void) => {
   return (event: React.MouseEvent<HTMLElement, MouseEvent>, ...params: any[]) => {

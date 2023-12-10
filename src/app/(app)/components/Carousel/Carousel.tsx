@@ -1,4 +1,4 @@
-import { CarouselConfig } from "@/app/page"
+import { CarouselConfig } from "@/app/(app)/page"
 import { Dispatch, SetStateAction } from "react"
 
 interface CarouselProps {

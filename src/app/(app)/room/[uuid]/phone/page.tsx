@@ -1,5 +1,6 @@
 "use client"
-import ActionPanels, { ActionPanelConfig } from "@/components/custom/ActionPanel/ActionPanel";
+import ActionPanels from "@/components/custom/form/ActionPanel/ActionPanel";
+import { ActionPanelConfig } from "@/components/custom/form/type";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps, Room } from "@/type";
