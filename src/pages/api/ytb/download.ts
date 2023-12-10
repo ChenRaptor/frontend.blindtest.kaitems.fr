@@ -4,7 +4,7 @@ import ffmpegPath from 'ffmpeg-static';
 
 ffmpeg.setFfmpegPath(ffmpegPath as string);
 
-const downloadAndConvertToMP3 = (videoUrl, outputFileName) => {
+const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
   const videoStream = ytdl(videoUrl, { quality: 'highestaudio' });
 
   const outputPath = `./public/audio/${outputFileName}.mp3`;
