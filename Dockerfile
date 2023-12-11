@@ -44,6 +44,10 @@ RUN npm run build
 # Create the audio.json file
 RUN echo '{"serie_music": [], "movie_music": []}' > /app/public/json/audio.json
 
+RUN chmod 777 /app/public/audio
+RUN chmod 777 /app/public/json
+RUN chmod 777 /app/public/json/audio.json
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
