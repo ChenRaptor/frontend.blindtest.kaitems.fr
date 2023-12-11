@@ -1,10 +1,10 @@
 import ytdl from 'ytdl-core';
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegPath from 'ffmpeg-static';
 import path from 'path';
 import fs from "fs"
+const ffmpegPath = require.resolve('ffmpeg-static');
 
-ffmpeg.setFfmpegPath(ffmpegPath as string);
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
   const videoStream = ytdl(videoUrl, { quality: 'highestaudio' });
