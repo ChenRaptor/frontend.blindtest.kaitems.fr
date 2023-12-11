@@ -1,8 +1,10 @@
-"use client"
 import AdvancedForm from '@/components/custom/form/Form/AdvancedForm';
 import { ActionPanelConfig } from '@/components/custom/form/type';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import SoundTable from './components/SoundTable/SoundTable';
+import AddingPanel from './components/AddingPanel/AddingPanel';
+import QueryProvider from './components/QueryProvider/QueryProvider';
 
 
 const config : ActionPanelConfig = {
@@ -30,43 +32,17 @@ const config : ActionPanelConfig = {
 //   return response.data;
 // };
 
-const YouTubeUpload = () => {
 
-  const [filesMP3, setFilesMP3]
-
-  //const { data, isLoading, isError } = useQuery('videoData', fetchData);
-
-  // TODO use react query 
-
-  const fetchData = async () => {
-    // Replace 'your-api-endpoint-url' with the actual URL of your API endpoint
-    const response = await axios.get('your-api-endpoint-url');
-    return response.data;
-  };
-
-
-  useEffect(() => async () => {
-    return await fetchData()
-  }
-  ,[])
-
-  const onSubmit = (values: any) => {
-    console.log(values)
-  }
+export default function Dashboard() {
 
   return (
-    <div className='sm:px-20 sm:py-10 w-full flex items-center justify-center flex-col'>
-      <div>
-        <h1>Upload YouTube Video</h1>
-        <div className="w-96">
-          <AdvancedForm config={config} onSubmit={onSubmit}/>
-        </div>
-        <ul>
-          <li>sas</li>
-        </ul>
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        <QueryProvider>
+          <AddingPanel/>
+          <SoundTable/>
+        </QueryProvider>
       </div>
     </div>
   );
 };
-
-export default YouTubeUpload;

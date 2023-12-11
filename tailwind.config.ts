@@ -49,6 +49,13 @@ module.exports = {
           }
         }
       },
+      select: {
+        light: '#e8eaed'
+      },
+      delete: {
+        light: '#EF5350',
+        dark: '#C62828',
+      },
       error: {
         light: '#EF5350',
         dark: '#C62828',

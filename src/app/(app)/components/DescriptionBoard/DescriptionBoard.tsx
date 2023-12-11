@@ -31,7 +31,7 @@ export default function DescriptionBoard({config, party, handlerStartGame, start
           {startGame ?
             <Button variant="outline" onClick={handlerStartGame}>Annuler le lancement</Button>
             :
-            <Button onClick={handlerStartGame}>Lancer la partie</Button>
+            <Button variant="primary" onClick={handlerStartGame}>Lancer la partie</Button>
           }
         </>
         }

@@ -7,8 +7,7 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import styles from "./AdvancedForm.module.css"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ActionPanelConfig, ActionPanelProps } from "../type"
+import { FormConfig } from "../type"
 import FormGroup from "../FormGroup/FormGroup"
 
 export const prevent = (fn: (event: React.MouseEvent<HTMLElement, MouseEvent>, ...params: any[]) => void) => {
@@ -17,7 +16,7 @@ export const prevent = (fn: (event: React.MouseEvent<HTMLElement, MouseEvent>, .
   };
 };
 
-export default function AdvancedForm({config, onSubmit} : {config: ActionPanelConfig, onSubmit: any}) {
+export default function AdvancedForm({config, onSubmit} : {config: FormConfig, onSubmit: any}) {
   const defaultValues : any = {};
   const defaultSchema : any = {};
 
@@ -55,7 +54,7 @@ export default function AdvancedForm({config, onSubmit} : {config: ActionPanelCo
           <FormGroup config={formField} form={form} key={`formField-${key}`}/>
         ))}
         <div className={styles['action-button']}>
-          <Button type="submit">{config.formSubmit}</Button>
+          <Button variant="primary" type="submit">{config.formSubmit}</Button>
         </div>
       </form>
     </Form>

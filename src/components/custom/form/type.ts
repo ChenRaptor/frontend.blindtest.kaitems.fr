@@ -7,6 +7,8 @@ export interface FormGroupInterface {
   description?: string
   placeholder: string
   defaultValue?: string
+  options?: {placeholder: string, value: string}[]
+  selectValue?: string
   schema: {
     min: number,
     max: number
@@ -20,6 +22,12 @@ export interface ActionPanelConfig {
   formCancel: string
   formFields: Array<FormGroupInterface>
 }
+
+export interface FormConfig {
+  formSubmit: string
+  formFields: Array<FormGroupInterface>
+}
+
 
 export type OnSubmit = (values: z.infer<z.ZodObject<any, "strip", z.ZodTypeAny, {
   [x: string]: any;

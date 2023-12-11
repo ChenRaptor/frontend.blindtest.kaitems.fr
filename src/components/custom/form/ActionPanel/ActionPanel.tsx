@@ -65,7 +65,7 @@ export default function ActionPanels({config, active, onSubmit, onOverlay, onCan
                   ))}
                   <div className={styles['action-button']}>
                     <Button variant="outline" onClick={onCancel}>{config.formCancel}</Button>
-                    <Button type="submit">{config.formSubmit}</Button>
+                    <Button variant="primary" type="submit">{config.formSubmit}</Button>
                   </div>
                 </form>
               </Form>
