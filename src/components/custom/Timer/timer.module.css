@@ -1,0 +1,62 @@
+.time {
+  margin: 0 auto;
+  --green: rgb(13, 134, 13);
+  --yellow: rgb(187, 145, 7);
+  --red: rgb(172, 15, 15);
+}
+
+.time .circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.time svg {
+  transform: rotate(270deg);
+}
+
+.time svg > circle {
+  fill: transparent;
+  stroke-width: 8;
+  stroke: #282828;
+  transform: translate(5px, 5px);
+  stroke-linecap: round;
+}
+
+.time svg > circle:last-of-type {
+  stroke: var(--currentColor);
+  stroke-dasharray: 440;
+  stroke-dashoffset: var(--currentOffsetDash);
+}
+
+.sec {
+  position: absolute;
+  font-weight: 500;
+  font-size: 2.5em;
+}
+
+.dot {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  transform: rotateZ(var(--transformZ));
+}
+
+.dot::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 15px;
+  height: 15px;
+  background-color: var(--currentColor);
+  border-radius: 50%;
+  box-shadow: 0 0 20px var(--currentColor), 0 0 60px var(--currentColor);
+}

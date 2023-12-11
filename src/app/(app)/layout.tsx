@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <SocketProvider>
         <body className='h-screen bg-gradient-to-t from-primary-50 to-primary-200'>{children}</body>
       </SocketProvider>

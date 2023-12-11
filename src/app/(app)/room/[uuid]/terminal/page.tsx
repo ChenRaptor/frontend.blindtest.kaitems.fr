@@ -2,12 +2,13 @@
 
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import YouTubeAudioExtractor from "./components/YouTubeAudioExtractor";
 // import YouTube, { YouTubeProps } from 'react-youtube';
 
 export default function Terminal({ params }: PhonePageProps) {
   const { socket } = useSocket();
+  const [ gameStatusPage , setGameStatusPage] = useState();
 
   const socketActions = async () => {
     // Socket Emit
@@ -15,32 +16,30 @@ export default function Terminal({ params }: PhonePageProps) {
 
     // Socket On
     socket.on("terminalJoinRoom", ({room}) => console.log(room));
-    socket.on("game-status", ({gameStatus}) => console.log(gameStatus));
-    // socket.on("ping", (val) => console.log(val));
+    socket.on("game-status", ({gameStatus}) => setGameStatusPage(gameStatus));
   }
+
   useEffect(() => {
     socket && socketActions();
   }, [socket]);
 
-  // const onPlayerReady: YouTubeProps['onReady'] = (event) => {
-  //   // access to player in all event handlers via event.target
-  //   event.target.pauseVideo();
-  // }
-
-  // const opts: YouTubeProps['opts'] = {
-  //   height: '390',
-  //   width: '640',
-  //   playerVars: {
-  //     // https://developers.google.com/youtube/player_parameters
-  //     autoplay: 1,
-  //   },
-  // };
-
   return (
     <div>
-      Terminal
-      <YouTubeAudioExtractor />
-      {/* <YouTube videoId="2g811Eo7K8U" opts={opts} onReady={onPlayerReady} />; */}
+      {
+        (gameStatusPage as any)?.currentStep === "launching-game-countdown" ?
+          <>
+            <p>Launching game</p>
+            <p className='text-5xl'>{(gameStatusPage as any)?.response?.countdown}</p>
+          </>
+          :
+          (gameStatusPage as any)?.currentStep === "game-in-progress" ?
+          <>
+            <p>Question 1</p>
+            <p className='text-5xl'>{(gameStatusPage as any)?.response?.countdown}</p>
+          </>
+          :
+        null
+      }
     </div>
   )
 }
