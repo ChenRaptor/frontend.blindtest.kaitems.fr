@@ -9,14 +9,14 @@ export default async function handler(req: any, res: any) {
     }
   
     // Filtrer les fichiers pour n'inclure que les fichiers MP3
-    // const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
+    const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
 
-    const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json');
+    const jsonFilePath = process.env.METHOD_PATH === 'PROCESS_CWD' ?
+    path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(__dirname, 'public', 'json', 'audio.json');
+    
     const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
 
-    console.log(jsonContent)
-
-    const filesIdMap = files.map((file: string) => {
+    const filesIdMap = mp3Files.map((file: string) => {
       let fileWithoutExt = file.split(".mp3")[0]
 
       const allArrays = Object.values(jsonContent);
@@ -27,12 +27,11 @@ export default async function handler(req: any, res: any) {
         console.log("2:", fileWithoutExt)
         return item.id === fileWithoutExt
       })
-      console.log(fileInfo)
       return {
         id: fileWithoutExt,
-        title: fileInfo.title,
-        tag: fileInfo.tag,
-        associated_piece: fileInfo.associated_piece
+        title: fileInfo?.title ?? "Unknow",
+        tag: fileInfo?.tag ?? "Unknow",
+        associated_piece: fileInfo?.associated_piece ?? "Unknow"
       }
     })
 
