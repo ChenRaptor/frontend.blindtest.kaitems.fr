@@ -11,8 +11,7 @@ export default async function handler(req: any, res: any) {
     // Filtrer les fichiers pour n'inclure que les fichiers MP3
     const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
 
-    const jsonFilePath = process.env.METHOD_PATH === 'PROCESS_CWD' ?
-      path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(process.cwd(), 'public', 'json', 'audio.json');
+    const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json')
     
     const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
 
@@ -23,8 +22,6 @@ export default async function handler(req: any, res: any) {
       const mergedArray = [].concat(...allArrays);
 
       let fileInfo = (mergedArray as any[]).find((item) => {
-        console.log("1:", item.id)
-        console.log("2:", fileWithoutExt)
         return item.id === fileWithoutExt
       })
       return {

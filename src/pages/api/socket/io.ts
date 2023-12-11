@@ -5,8 +5,7 @@ import { NextApiResponseServerIo } from "@/type"
 import { handleEnterRoom } from "@/lib/socket";
 import path from "path";
 
-const jsonFilePath = process.env.METHOD_PATH === 'PROCESS_CWD' ?
-  path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(process.cwd(), 'public', 'json', 'audio.json');
+const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json');
 
 function startCountdown(io: any, room: string, gameStatus: any): Promise<void> {
   return new Promise((resolve) => {
