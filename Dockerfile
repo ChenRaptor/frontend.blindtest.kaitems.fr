@@ -65,8 +65,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
-
 RUN npm install ffmpeg-static@latest
+
+USER nextjs
 
 CMD ["node", "server.js"]
