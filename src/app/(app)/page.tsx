@@ -3,7 +3,6 @@ import Carousel from "./components/Carousel/Carousel";
 import { v4 as uuidv4 } from 'uuid';
 import QuickResponseCode from "./components/QuickResponseCode/QuickResponseCode";
 import { MouseEventHandler, useEffect, useMemo, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
 import DescriptionBoard from "./components/DescriptionBoard/DescriptionBoard";
 import { Button } from "@/components/ui/button";
