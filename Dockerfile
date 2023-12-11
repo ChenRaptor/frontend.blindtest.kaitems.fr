@@ -47,7 +47,6 @@ RUN echo '{"serie_music": [], "movie_music": []}' > /app/public/json/audio.json
 RUN chmod 777 /app/public/audio
 RUN chmod 777 /app/public/json
 RUN chmod 777 /app/public/json/audio.json
-RUN npm install ffmpeg-static@latest
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -68,5 +67,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
+RUN npm install ffmpeg-static@latest
 
 CMD ["node", "server.js"]
