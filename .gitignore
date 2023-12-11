@@ -10,8 +10,9 @@
 /coverage
 
 # public
-/public/audio/
-/public/json/
+public/audio/*
+public/json/*
+
 
 
 # next.js
@@ -39,3 +40,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/json/audio.json
