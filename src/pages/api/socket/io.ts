@@ -1,7 +1,11 @@
+import fs from 'fs';
 import { Server } from "socket.io";
 import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/type"
 import { handleEnterRoom } from "@/lib/socket";
+import path from "path";
+
+const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json');
 
 function startCountdown(io: any, room: string, gameStatus: any): Promise<void> {
   return new Promise((resolve) => {
@@ -34,6 +38,39 @@ function startCountdown(io: any, room: string, gameStatus: any): Promise<void> {
   });
 }
 
+function getRandomUniqueElement(array: any[], selectedElements: any[]): any | undefined {
+  if (array.length === 0) {
+    return undefined; // Le tableau est vide, aucun élément disponible
+  }
+
+  const index = Math.floor(Math.random() * array.length);
+  const selectedElement = array.splice(index, 1)[0];
+
+  // Ajouter l'élément sélectionné à la liste des éléments déjà sélectionnés
+  selectedElements.push(selectedElement);
+
+  return selectedElement;
+}
+
+
+function getUniqueRandomElements(array: any[], randomElement: any, count: number): any[] {
+  const newArray = [...array]
+  const uniqueRandomElements: any[] = [];
+
+  while (uniqueRandomElements.length < count && newArray.length > 0) {
+    const index = Math.floor(Math.random() * newArray.length);
+    const selectedElement = newArray.splice(index, 1)[0].id;
+
+    // Vérifier que l'élément n'est pas déjà sélectionné et n'est pas égal à randomElement
+    if (selectedElement !== randomElement.id) {
+      uniqueRandomElements.push(selectedElement);
+    }
+  }
+
+  return uniqueRandomElements;
+}
+
+
 async function startGameRound(io: any, room: string, socket: any) {
   let gameStatus : any = {
     currentStep: "launching-game-countdown",
@@ -50,25 +87,37 @@ async function startGameRound(io: any, room: string, socket: any) {
 
   await startCountdown(io, room, gameStatus);
 
-  gameStatus = {
-    currentStep: "game-in-progress",
-    response: {
-      step: {
-        question: "Cette musique est associée à quel série ?",
-        musiqueLink: "https://www.youtube.com/watch?v=1q6QOYtT3uM",
-        options: ["Paris", "London", "Berlin", "Madrid"],
-      },
-      countdown: 15,
-      players: [
-        {player: "player1", score: 0},
-        {player: "player2", score: 0},
-        {player: "player3", score: 0},
-        {player: "player4", score: 0},
-      ]
-    }
-  };
+  const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
+  const arrayTag = jsonContent["serie_music"];
 
-  await startCountdown(io, room, gameStatus);
+  const selectedElements: any[] = [];
+  for (let i = 0; i < 2; i++) {
+    const correctResponse = getRandomUniqueElement(arrayTag, selectedElements);
+    const wrongResponse = getUniqueRandomElements(arrayTag, correctResponse, 3)
+    const allElementsToMix = [correctResponse.id, ...wrongResponse];
+    const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
+    console.log(mixedResponse)
+
+    gameStatus = {
+      currentStep: "game-in-progress",
+      response: {
+        step: {
+          question: "Cette musique est associée à quel série ?",
+          musiqueLink: correctResponse.id,
+          options: mixedResponse,
+        },
+        countdown: 15,
+        players: [
+          {player: "player1", score: 0},
+          {player: "player2", score: 0},
+          {player: "player3", score: 0},
+          {player: "player4", score: 0},
+        ]
+      }
+    };
+  
+    await startCountdown(io, room, gameStatus);
+  }
 
   io.to(room).emit('game-status', { gameStatus: "finish" });
 }

@@ -43,7 +43,7 @@ const config = {
       selectValue: "Sélectionne un tag pour ce song",
       options: [
         {placeholder: "Musique de série", value: "serie_music"},
-        {placeholder: "Musique de série", value: "movie_music"}
+        {placeholder: "Musique de film", value: "movie_music"}
       ],
       placeholder: "",
       schema: {

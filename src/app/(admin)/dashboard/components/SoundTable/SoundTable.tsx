@@ -70,7 +70,7 @@ export const columns: ColumnDef<RowData>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue("title")}</div>,
   },
   {
     accessorKey: "tag",

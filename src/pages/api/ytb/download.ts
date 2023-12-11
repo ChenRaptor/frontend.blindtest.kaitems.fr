@@ -16,6 +16,8 @@ const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
     .audioCodec('libmp3lame')
     .audioBitrate(320)
     .toFormat('mp3')
+    .setStartTime(0) // Définir le début à 0 secondes
+    .duration(20)   // Définir la durée à 20 secondes
     .on('end', () => {
       console.log('Conversion finished.');
     })
@@ -39,10 +41,10 @@ export default async function handler(req: any, res: any) {
   const currentContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
   // Mettre à jour le tableau avec les données de req.body
-  currentContent.push(req.body);
+  currentContent[req.body.tag].push(req.body);
 
   // Réécrire le fichier avec le contenu mis à jour
-  fs.writeFileSync(filePath, JSON.stringify(currentContent));
+  fs.writeFileSync(filePath, JSON.stringify(currentContent, null, 2));
 
   res.status(200).json({ name: 'Success' })
 }

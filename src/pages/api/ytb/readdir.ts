@@ -12,14 +12,17 @@ export default async function handler(req: any, res: any) {
     // const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
 
     const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json');
-    const jsonContent : any[] = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
+    const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
 
     console.log(jsonContent)
 
     const filesIdMap = files.map((file: string) => {
       let fileWithoutExt = file.split(".mp3")[0]
 
-      let fileInfo = jsonContent.find((item) => {
+      const allArrays = Object.values(jsonContent);
+      const mergedArray = [].concat(...allArrays);
+
+      let fileInfo = (mergedArray as any[]).find((item) => {
         console.log("1:", item.id)
         console.log("2:", fileWithoutExt)
         return item.id === fileWithoutExt

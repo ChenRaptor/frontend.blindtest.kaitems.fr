@@ -1,1 +1,23 @@
-[{"id":"ilfYnhXD-bE","title":"Breaking Bad Main Title Theme","associated_piece":"Breaking Bad","tag":"serie_music"}]
+{
+  "serie_music": [
+    {
+      "id": "l0PV3BQHDo8",
+      "title": "Fever Ray - If I Had A Heart",
+      "associated_piece": "Vikings",
+      "tag": "serie_music"
+    },
+    {
+      "id": "hKAMpFRkMiA",
+      "title": "Red Right Hand - Nick Cave And The Bad Seeds",
+      "associated_piece": "Peaky Blinders",
+      "tag": "serie_music"
+    },
+    {
+      "id": "ilfYnhXD-bE",
+      "title": "Breaking Bad Main Title Theme",
+      "associated_piece": "Breaking Bad",
+      "tag": "serie_music"
+    }
+  ],
+  "movie_music": []
+}
