@@ -10,7 +10,7 @@ const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
   const videoStream = ytdl(videoUrl, { quality: 'highestaudio' });
 
   const outputPath = process.env.METHOD_PATH === 'PROCESS_CWD' ?
-  path.join(process.cwd(), 'public', 'audio', `${outputFileName}.mp3`) : path.join(__dirname, 'public', 'audio', `${outputFileName}.mp3`);
+    path.join(process.cwd(), 'public', 'audio', `${outputFileName}.mp3`) : path.join(__dirname, 'public', 'audio', `${outputFileName}.mp3`);
 
   ffmpeg()
     .input(videoStream)
@@ -37,7 +37,7 @@ export default async function handler(req: any, res: any) {
 
   // Chemin du fichier audio.json dans le dossier public/json
   const filePath = process.env.METHOD_PATH === 'PROCESS_CWD' ?
-  path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(__dirname, 'public', 'json', 'audio.json');
+    path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(__dirname, 'public', 'json', 'audio.json');
 
   // Lire le contenu actuel du fichier
   const currentContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));

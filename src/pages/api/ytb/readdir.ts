@@ -12,7 +12,7 @@ export default async function handler(req: any, res: any) {
     const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
 
     const jsonFilePath = process.env.METHOD_PATH === 'PROCESS_CWD' ?
-    path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(__dirname, 'public', 'json', 'audio.json');
+      path.join(process.cwd(), 'public', 'json', 'audio.json') : path.join(__dirname, 'public', 'json', 'audio.json');
     
     const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
 
