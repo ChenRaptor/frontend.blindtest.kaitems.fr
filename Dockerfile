@@ -4,6 +4,7 @@ FROM node:18-alpine AS base
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
+RUN apk --no-cache add ffmpeg
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -36,8 +37,12 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 # RUN yarn build
 
+RUN chmod +x /app/node_modules/ffmpeg-static/ffmpeg
 # If using npm comment out above and use below instead
 RUN npm run build
+
+# Create the audio.json file
+RUN echo '{"serie_music": [], "movie_music": []}' > /app/public/json/audio.json
 
 # Production image, copy all the files and run next
 FROM base AS runner

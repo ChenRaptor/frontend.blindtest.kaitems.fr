@@ -35,7 +35,6 @@ export default async function handler(req: any, res: any) {
       }
     })
 
-    console.log(__dirname)
-    res.status(200).json("dirname: ",__dirname)
+    res.status(200).json(filesIdMap)
   });
 }
