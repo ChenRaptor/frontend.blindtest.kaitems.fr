@@ -1,0 +1,57 @@
+/* styles/Bubbles.module.css */
+.bubbles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+}
+
+.square {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+}
+
+.bubble50 {
+  @apply bg-mandy-50/50;
+}
+.bubble100 {
+  @apply bg-mandy-100/50;
+}
+.bubble200 {
+  @apply bg-mandy-200/50;
+}
+.bubble300 {
+  @apply bg-mandy-300/50;
+}
+.bubble400 {
+  @apply bg-mandy-400/50;
+}
+.bubble500 {
+  @apply bg-mandy-500/50;
+}
+.bubble600 {
+  @apply bg-mandy-600/50;
+}
+.bubble700 {
+  @apply bg-mandy-700/50;
+}
+.bubble800 {
+  @apply bg-mandy-800/50;
+}
+.bubble900 {
+  @apply bg-mandy-900/50;
+}
+.bubble950 {
+  @apply bg-mandy-950/50;
+}

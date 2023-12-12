@@ -40,20 +40,6 @@ const carouselConfig : CarouselConfig = [
   },
   {
     id: 2,
-    title: "Film",
-    type: "Réplique",
-    description: "lorem",
-    phrase: "Blindtest sur les répliques de film"
-  },
-  {
-    id: 3,
-    title: "Série",
-    type: "Réplique",
-    description: "lorem",
-    phrase: "Blindtest sur les répliques de série"
-  },
-  {
-    id: 4,
     title: "Aléatoire",
     description: "lorem",
     phrase: "Blindtest aléatoire"

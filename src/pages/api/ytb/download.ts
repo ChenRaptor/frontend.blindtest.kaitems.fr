@@ -29,8 +29,10 @@ const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
 
 export default async function handler(req: any, res: any) {
 
+  console.log(req.body)
   const youtubeVideoUrl = `https://www.youtube.com/watch?v=${req.body.id}`;
   const outputFileName = req.body.id; // Nom du fichier sans extension
+  
   
   downloadAndConvertToMP3(youtubeVideoUrl, outputFileName);
 
@@ -41,7 +43,10 @@ export default async function handler(req: any, res: any) {
   const currentContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
   // Mettre à jour le tableau avec les données de req.body
-  currentContent[req.body.tag].push(req.body);
+  currentContent[req.body.tag].push({
+    ...req.body,
+    imageUrl: null
+  });
 
   // Réécrire le fichier avec le contenu mis à jour
   fs.writeFileSync(filePath, JSON.stringify(currentContent, null, 2));

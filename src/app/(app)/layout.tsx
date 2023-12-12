@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { SocketProvider } from '@/providers/socket-provider'
 import '../globals.css'
+import Bubbles from '@/components/custom/Background/Bubbles/Bubbles'
 
 export const metadata: Metadata = {
   title: 'blindtest.kaitems.fr',
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SocketProvider>
-        <body className='h-screen bg-gradient-to-t from-primary-50 to-primary-200'>{children}</body>
+        <body className='h-screen bg-gradient-to-t from-primary-50 to-primary-200'>
+          <Bubbles opacity={0.2} />
+          {children}
+        </body>
       </SocketProvider>
     </html>
   )
