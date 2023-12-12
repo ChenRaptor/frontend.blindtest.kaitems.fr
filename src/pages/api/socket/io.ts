@@ -40,7 +40,7 @@ function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<
     let secondsLeft : number = 15;
     switch (gameStatus.currentStep) {
       case "launching-game-countdown":
-        secondsLeft = 5;
+        secondsLeft = 10;
         break;
       case "game-in-progress":
         secondsLeft = 15;
