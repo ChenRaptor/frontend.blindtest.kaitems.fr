@@ -3,6 +3,7 @@ import Timer from "@/components/custom/Timer/Timer";
 import ActionPanels from "@/components/custom/form/ActionPanel/ActionPanel";
 import { ActionPanelConfig } from "@/components/custom/form/type";
 import { Button } from "@/components/ui/button";
+import { GameStatus } from "@/pages/api/socket/io";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps, Room } from "@/type";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -46,7 +47,7 @@ const userJoinRoomListener = (setRoomData: Dispatch<SetStateAction<Room | undefi
 
 export default function Phone({ params }: PhonePageProps) {
   const { socket } = useSocket();
-  const [ gameStatusPage , setGameStatusPage] = useState();
+  const [ gameStatusPage , setGameStatusPage] = useState<GameStatus>();
 
   const [user, setUser] = useState<User>()
   const [roomData, setRoomData] = useState<Room>();
@@ -58,7 +59,7 @@ export default function Phone({ params }: PhonePageProps) {
 
     // Socket On
     socket.on("userJoinRoom", userJoinRoomListener(setRoomData));
-    socket.on("game-status", ({gameStatus}) => setGameStatusPage(gameStatus));
+    socket.on("game-status", (gameStatus: GameStatus) => {setGameStatusPage(gameStatus)});
   }
 
   useEffect(() => {
@@ -87,21 +88,21 @@ export default function Phone({ params }: PhonePageProps) {
       />
       <h1 className='text-center text-4xl font-bold mb-10'>{user?.username}</h1>
       {
-        (gameStatusPage as any)?.currentStep === "launching-game-countdown" ?
+        gameStatusPage?.currentStep === "launching-game-countdown" ?
           <div className='flex flex-col justify-center items-center'>
             <p className='text-center mb-2'>The game start in </p>
-            <Timer time={(gameStatusPage as any)?.response?.countdown} totalTime={10}/>
+            <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={5}/>
           </div>
-        :
-        (gameStatusPage as any)?.currentStep === 'game-in-progress' ?
-          <div className='px-4 grid grid-cols-2 gap-4 gap-y-8'>
-            <Button onClick={() => {console.log('responseA')}}>A</Button>
-            <Button onClick={() => {console.log('responseB')}}>B</Button>
-            <Button onClick={() => {console.log('responseC')}}>C</Button>
-            <Button onClick={() => {console.log('responseD')}}>D</Button>
-          </div>
-        :
-        <p className='text-center'>La partie n'a pas encore commencé.</p>
+          :
+          gameStatusPage?.currentStep === "game-in-progress" ?
+            <div className='px-4 grid grid-cols-2 gap-4 gap-y-8'>
+              <Button onClick={() => {console.log('responseA')}}>A</Button>
+              <Button onClick={() => {console.log('responseB')}}>B</Button>
+              <Button onClick={() => {console.log('responseC')}}>C</Button>
+              <Button onClick={() => {console.log('responseD')}}>D</Button>
+            </div>
+            :
+            <p className='text-center'>La partie n&apos;a pas encore commencé.</p>
       }
     </div>
   )

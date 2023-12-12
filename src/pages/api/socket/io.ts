@@ -40,7 +40,7 @@ function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<
     let secondsLeft : number = 15;
     switch (gameStatus.currentStep) {
       case "launching-game-countdown":
-        secondsLeft = 10;
+        secondsLeft = 5;
         break;
       case "game-in-progress":
         secondsLeft = 15;
@@ -98,7 +98,7 @@ function getUniqueRandomElements(array: any[], randomElement: any, count: number
   return uniqueRandomElements;
 }
 
-async function handlePlayerResponse(room: string, io: any, correctResponse: string, gameStatus: GameStatus) {
+async function handlePlayerResponse(socket: any, room: string, io: any, correctResponse: string, gameStatus: GameStatus) {
 
   const responseValidator = ({answer, playerIdWhoAnswered}: {answer: string, playerIdWhoAnswered: string}) => {
     const isCorrect = answer === correctResponse;
@@ -111,11 +111,11 @@ async function handlePlayerResponse(room: string, io: any, correctResponse: stri
     }
   }
 
-  io.to(room).on(`player-response-${correctResponse}`, responseValidator);
+  socket.on(`player-response-${room}`, responseValidator);
 
   await startCountdown(io, room, gameStatus);
 
-  io.to(room).off(`player-response-${correctResponse}`, responseValidator);
+  socket.off(`player-response-${room}`, responseValidator);
 };
 
 
@@ -170,7 +170,7 @@ async function startGameRound(io: any, room: string, socket: any) {
       }
     };
   
-    await handlePlayerResponse(room, io, correctResponse, gameStatus);
+    await handlePlayerResponse(socket, room, io, correctResponse, gameStatus);
   }
 
   // Affichage du score
