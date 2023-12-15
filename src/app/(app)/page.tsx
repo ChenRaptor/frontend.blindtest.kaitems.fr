@@ -90,7 +90,6 @@ export default function Home() {
     count === 0 && redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/room/${link}/terminal?type=${option}`)
   },[count, option])
 
-
   // TODO : Add an exit button pour select a new game type and generate a new QRCode on change option
   
   return (

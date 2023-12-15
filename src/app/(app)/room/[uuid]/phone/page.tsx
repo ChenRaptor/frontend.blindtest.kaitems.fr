@@ -60,6 +60,8 @@ export default function Phone({ params }: PhonePageProps) {
     // Socket On
     socket.on("userJoinRoom", userJoinRoomListener(setRoomData));
     socket.on("game-status", (gameStatus: GameStatus) => {setGameStatusPage(gameStatus)});
+
+    console.log(socket.id)
   }
 
   useEffect(() => {
@@ -76,7 +78,9 @@ export default function Phone({ params }: PhonePageProps) {
     event.preventDefault()
     console.log("cancel")
   }
-  
+  const reply = (answer: string) => {
+    socket.emit(`player-response-${roomData?.id}`, {answer, playerIdWhoAnswered: socket.id})
+  }
   // améliorer chrono
   return (
     <div className="my-10">
@@ -96,10 +100,11 @@ export default function Phone({ params }: PhonePageProps) {
           :
           gameStatusPage?.currentStep === "game-in-progress" ?
             <div className='px-4 grid grid-cols-2 gap-4 gap-y-8'>
-              <Button onClick={() => {console.log('responseA')}}>A</Button>
-              <Button onClick={() => {console.log('responseB')}}>B</Button>
-              <Button onClick={() => {console.log('responseC')}}>C</Button>
-              <Button onClick={() => {console.log('responseD')}}>D</Button>
+              {
+                gameStatusPage.response.step?.options.map((answer) => 
+                  <Button key={answer} onClick={() => { console.log(answer);console.log(`player-response-${roomData?.id}`); reply(answer)}}>{answer}</Button>
+                )
+              }
             </div>
             :
             <p className='text-center'>La partie n&apos;a pas encore commencé.</p>

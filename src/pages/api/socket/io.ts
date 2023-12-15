@@ -2,7 +2,7 @@ import fs from 'fs';
 import { Server } from "socket.io";
 import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/type"
-import { handleEnterRoom } from "@/lib/socket";
+import { getSocketsData, getSocketsInRoom, handleEnterRoom } from "@/lib/socket";
 import path from "path";
 
 export interface ObjectAudio {
@@ -56,7 +56,6 @@ function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<
       if (secondsLeft === 0) {
         // Countdown finished, resolve the promise
         clearInterval(countdownInterval);
-        console.log(`Game started in room ${room}`);
         resolve();
       } else {
         secondsLeft--;
@@ -100,7 +99,11 @@ function getUniqueRandomElements(array: any[], randomElement: any, count: number
 
 async function handlePlayerResponse(socket: any, room: string, io: any, correctResponse: string, gameStatus: GameStatus) {
 
+  console.log(`player-response-${room}`)
+
   const responseValidator = ({answer, playerIdWhoAnswered}: {answer: string, playerIdWhoAnswered: string}) => {
+    console.log("answer,correctResponse")
+    console.log(answer,correctResponse)
     const isCorrect = answer === correctResponse;
 
     if (isCorrect) {
@@ -111,26 +114,24 @@ async function handlePlayerResponse(socket: any, room: string, io: any, correctR
     }
   }
 
-  socket.on(`player-response-${room}`, responseValidator);
+  //TODO
+  socket.on(`player-response-${room}`, (res : any) =>  console.log(res));
 
   await startCountdown(io, room, gameStatus);
-
-  socket.off(`player-response-${room}`, responseValidator);
 };
 
 
 // Methode pour lancer une partie
 async function startGameRound(io: any, room: string, socket: any) {
+
+  const sockets = await getSocketsInRoom(io, room)
+  const userSockets = getSocketsData(sockets)
+  const players = userSockets.map((player) => ({...player, score: 0}))
+
   let gameStatus : GameStatus = {
     currentStep: "launching-game-countdown",
     response: {
-      countdown: 5,
-      players: [
-        {id: "player1", username: "", score: 0},
-        {id: "player2", username: "", score: 0},
-        {id: "player3", username: "", score: 0},
-        {id: "player4", username: "", score: 0},
-      ]
+      players
     }
   };
 
@@ -150,42 +151,20 @@ async function startGameRound(io: any, room: string, socket: any) {
     
     const allElementsToMix = [correctResponse, ...wrongResponses];
     const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
-    console.log(mixedResponse)
 
-    gameStatus = {
-      currentStep: "game-in-progress",
-      response: {
-        step: {
-          question: "Cette musique est associée à quel série ?",
-          musiqueLink: objectAudio.id,
-          options: mixedResponse,
-        },
-        countdown: 15,
-        players: [
-          {id: "player1", username: "", score: 0},
-          {id: "player2", username: "", score: 0},
-          {id: "player3", username: "", score: 0},
-          {id: "player4", username: "", score: 0},
-        ]
-      }
-    };
+    gameStatus.currentStep = "game-in-progress"
+    gameStatus.response.step = {
+      question: "Cette musique est associée à quel série ?",
+      musiqueLink: `/audio/${objectAudio.id}.mp3`,
+      options: mixedResponse,
+    }
   
     await handlePlayerResponse(socket, room, io, correctResponse, gameStatus);
   }
 
   // Affichage du score
 
-  gameStatus = {
-    currentStep: "game-completed",
-    response: {
-      players: [
-        {id: "player1", username: "", score: 0},
-        {id: "player2", username: "", score: 0},
-        {id: "player3", username: "", score: 0},
-        {id: "player4", username: "", score: 0},
-      ]
-    }
-  };
+  gameStatus.currentStep = "game-completed"
 
   io.to(room).emit('game-status', gameStatus);
 }
@@ -213,7 +192,6 @@ export default function SocketHandler( req: NextApiRequest, res: NextApiResponse
     socket.on('enterRoom', handleEnterRoom(io, socket));
 
     socket.on("launchGame", ({room}: {room: string}) => {
-      console.log(`Game Launching ${room} in progress...`);
       startGameRound(io, room, socket)
     });
 
@@ -223,6 +201,5 @@ export default function SocketHandler( req: NextApiRequest, res: NextApiResponse
 
   io.on("connection", onConnection);
 
-  console.log("Setting up socket");
   res.end();
 }

@@ -1,12 +1,11 @@
 "use client"
-
+import AudioPlayer from "@/components/custom/AudioPlayer/AudioPlayer";
 import Timer from "@/components/custom/Timer/Timer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GameStatus } from "@/pages/api/socket/io";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
 import { useEffect, useState } from "react";
-
 
 export default function Terminal({ params }: PhonePageProps) {
   const { socket } = useSocket();
@@ -15,7 +14,7 @@ export default function Terminal({ params }: PhonePageProps) {
     response: {
       step: {
         question: "Cette musique est associée à quel série ?",
-        musiqueLink: "dzdzjdz",
+        musiqueLink: `/audio/IlfYnhXD-BE.mp3`,
         options: ["mixedResponse"],
       },
       countdown: 15,
@@ -27,6 +26,10 @@ export default function Terminal({ params }: PhonePageProps) {
       ]
     }
   })
+
+  useEffect(() => {
+    console.log(gameStatusPage)
+  },[gameStatusPage])
 
   const socketActions = async () => {
     socket.emit("launchGame", {room: params.uuid});
@@ -72,6 +75,9 @@ export default function Terminal({ params }: PhonePageProps) {
 
                 <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
 
+                <AudioPlayer path={gameStatusPage?.response.step?.musiqueLink as string}/>
+
+                
                 <div className="h-96 flex items-center justify-center mx-auto">
                   <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={15}/>
                 </div>

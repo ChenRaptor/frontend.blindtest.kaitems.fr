@@ -14,13 +14,12 @@ const extendSocketData = (socket: Socket, object:any) => {
   }
   return socket
 }
-
-const getSocketsInRoom = async (io: Server, room: string) => {
+export const getSocketsInRoom = async (io: Server, room: string) => {
   return (await io.in(room)
     .fetchSockets())
 }
 
-const getSocketsData = (res: any[]) => {
+export const getSocketsData = (res: any[]) => {
   return res.filter((socket) => socket.data.hasOwnProperty('user'))
     .map((socket) => socket.data.user)
 }
