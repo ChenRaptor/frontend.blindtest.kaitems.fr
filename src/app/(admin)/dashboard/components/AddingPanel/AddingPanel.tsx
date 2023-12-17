@@ -1,9 +1,15 @@
 "use client"
 import AdvancedForm from "@/components/custom/form/Form/AdvancedForm"
+import { FormGroupInterface } from "@/components/custom/form/type";
 import axios from "axios";
 import { useMutation } from "react-query";
 
-const config = {
+type Config = {
+  formSubmit: string,
+  formFields: FormGroupInterface[]
+} 
+
+const config : Config = {
   formSubmit: "Confirmer",
   formFields: [
     {
@@ -12,8 +18,19 @@ const config = {
       label: "Identifiant video youtube",
       placeholder: "XXXXXXXXXXXXX",
       schema: {
-        min: 6,
-        max: 12
+        min: 0,
+        max: 255
+      }
+    },
+    {
+      name: "started_at",
+      type: "number",
+      label: "Commence à",
+      defaultValue: "0",
+      placeholder: "",
+      schema: {
+        min: 0,
+        max: 255
       }
     },
     {

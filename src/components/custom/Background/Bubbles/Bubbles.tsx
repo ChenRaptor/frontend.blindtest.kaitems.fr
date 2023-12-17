@@ -90,7 +90,7 @@ function Bubbles({opacity}: {opacity: number}) {
     return () => {
       // Cleanup logic if necessary
     };
-  }, []);
+  }, [opacity]);
 
   return <div ref={bubblesRef} className={styles.bubbles}></div>;
 };

@@ -1,6 +1,7 @@
 "use client"
 import { Disclosure } from '@headlessui/react'
 import { DocumentDuplicateIcon, HomeIcon, Bars3Icon, Cog6ToothIcon, ChevronRightIcon, UsersIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
 interface Navigation {
@@ -22,7 +23,7 @@ function classNames(...classes: string[]) {
 
 function LogoWeb({className} : {className: string}) {
   return (
-    <img
+    <Image
       className={className}
       src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
       alt="Your Company"
