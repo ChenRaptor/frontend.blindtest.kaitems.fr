@@ -13,7 +13,7 @@ import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
 
 export interface carouselConfigItem {
-  id: number
+  id: string
   title: string
   type?: string
   description: string
@@ -25,21 +25,21 @@ export type CarouselConfig = Array<carouselConfigItem>
 
 const carouselConfig : CarouselConfig = [
   {
-    id: 0,
+    id: "movie_music",
     title: "Film",
     type: "Musique",
     description: "lorem",
     phrase: "Blindtest sur les musiques de film"
   },
   {
-    id: 1,
+    id: "serie_music",
     title: "Série",
     type: "Musique",
     description: "lorem",
     phrase: "Blindtest sur les musiques de série"
   },
   {
-    id: 2,
+    id: "aleatoire",
     title: "Aléatoire",
     description: "lorem",
     phrase: "Blindtest aléatoire"
@@ -70,7 +70,7 @@ export default function Home() {
 
   const link = useMemo(() => uuidv4(),[])
 
-  const [option, setOption] = useState<number>(0)
+  const [option, setOption] = useState<string>(carouselConfig[0].id)
 
   const handlerQRCode : MouseEventHandler<HTMLElement> = () => {
     setQuickResponseCode({
@@ -100,7 +100,7 @@ export default function Home() {
 
           <div className="py-20 grid grid-cols-1 gap-20 lg:grid-cols-3">
             <div className="flex items-start flex-col">
-              <DescriptionBoard config={carouselConfig[option]} party={!!quickResponseCode} handlerStartGame={handlerStartGame} startGame={startGame} count={count}/>
+              <DescriptionBoard config={carouselConfig.filter((item) => item.id === option)[0]} party={!!quickResponseCode} handlerStartGame={handlerStartGame} startGame={startGame} count={count}/>
             </div>
             <div className="flex items-center justify-center xl:w-[384px]">
               {quickResponseCode ?
@@ -116,7 +116,7 @@ export default function Home() {
 
         </div>
         <div className="px-4 py-4 sm:p-6">
-          <Carousel mutate={setOption} value={option} config={carouselConfig}/>
+          <Carousel mutate={setOption} config={carouselConfig}/>
         </div>
         <div className="px-4 py-4 sm:px-6 text-center">
           {quickResponseCode?.url &&

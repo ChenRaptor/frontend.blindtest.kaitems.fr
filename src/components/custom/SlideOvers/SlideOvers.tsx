@@ -3,6 +3,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { LinkIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/react/20/solid'
+import Image from 'next/image'
 
 const team = [
   {
@@ -134,7 +135,7 @@ export default function SlideOvers() {
                                       href={person.href}
                                       className="relative rounded-full hover:opacity-75"
                                     >
-                                      <img
+                                      <Image
                                         className="inline-block h-8 w-8 rounded-full"
                                         src={person.imageUrl}
                                         alt={person.name}

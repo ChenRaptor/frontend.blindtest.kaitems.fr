@@ -43,7 +43,7 @@ function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<
         secondsLeft = 5;
         break;
       case "game-in-progress":
-        secondsLeft = 15;
+        secondsLeft = 2;
         break;
     }
     
@@ -120,7 +120,7 @@ async function handlePlayerResponse(socket: any, room: string, io: any, correctR
 
 
 // Methode pour lancer une partie
-async function startGameRound(io: any, room: string, socket: any) {
+async function startGameRound(io: any, room: string, socket: any, mode: string) {
   let gameStatus : GameStatus = {
     currentStep: "launching-game-countdown",
     response: {
@@ -137,40 +137,41 @@ async function startGameRound(io: any, room: string, socket: any) {
   await startCountdown(io, room, gameStatus);
 
   const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
-  const arrayTag = jsonContent["serie_music"];
+  const arrayTag = jsonContent[mode];
 
   const selectedElements: any[] = [];
 
-
-  for (let i = 0; i < 2; i++) {
-    const objectAudio : ObjectAudio = getRandomUniqueElement(arrayTag, selectedElements);
-
-    const correctResponse : string = objectAudio.associated_piece;
-    const wrongResponses : string[] = getUniqueRandomElements(arrayTag, objectAudio.id, 3)
-    
-    const allElementsToMix = [correctResponse, ...wrongResponses];
-    const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
-    console.log(mixedResponse)
-
-    gameStatus = {
-      currentStep: "game-in-progress",
-      response: {
-        step: {
-          question: "Cette musique est associée à quel série ?",
-          musiqueLink: objectAudio.id,
-          options: mixedResponse,
-        },
-        countdown: 15,
-        players: [
-          {id: "player1", username: "", score: 0},
-          {id: "player2", username: "", score: 0},
-          {id: "player3", username: "", score: 0},
-          {id: "player4", username: "", score: 0},
-        ]
-      }
-    };
+  if (arrayTag) {
+    for (let i = 0; i < 2; i++) {
+      const objectAudio : ObjectAudio = getRandomUniqueElement(arrayTag, selectedElements);
   
-    await handlePlayerResponse(socket, room, io, correctResponse, gameStatus);
+      const correctResponse : string = objectAudio.associated_piece;
+      const wrongResponses : string[] = getUniqueRandomElements(arrayTag, objectAudio.id, 3)
+      
+      const allElementsToMix = [correctResponse, ...wrongResponses];
+      const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
+      console.log(mixedResponse)
+  
+      gameStatus = {
+        currentStep: "game-in-progress",
+        response: {
+          step: {
+            question: "Cette musique est associée à quel série ?",
+            musiqueLink: objectAudio.id,
+            options: mixedResponse,
+          },
+          countdown: 15,
+          players: [
+            {id: "player1", username: "", score: 0},
+            {id: "player2", username: "", score: 0},
+            {id: "player3", username: "", score: 0},
+            {id: "player4", username: "", score: 0},
+          ]
+        }
+      };
+      await handlePlayerResponse(socket, room, io, correctResponse, gameStatus);
+  }
+  
   }
 
   // Affichage du score
@@ -190,15 +191,6 @@ async function startGameRound(io: any, room: string, socket: any) {
   io.to(room).emit('game-status', gameStatus);
 }
 
-
-
-
-
-
-
-
-
-
 export default function SocketHandler( req: NextApiRequest, res: NextApiResponseServerIo ) {
 
   if (res.socket.server.io) {
@@ -212,13 +204,10 @@ export default function SocketHandler( req: NextApiRequest, res: NextApiResponse
   const onConnection = (socket: any) => {
     socket.on('enterRoom', handleEnterRoom(io, socket));
 
-    socket.on("launchGame", ({room}: {room: string}) => {
+    socket.on("launchGame", ({room, mode}: {room: string, mode: string}) => {
       console.log(`Game Launching ${room} in progress...`);
-      startGameRound(io, room, socket)
+      startGameRound(io, room, socket, mode)
     });
-
-
-
   };
 
   io.on("connection", onConnection);

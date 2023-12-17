@@ -2,12 +2,11 @@ import { CarouselConfig } from "@/app/(app)/page"
 import { Dispatch, SetStateAction } from "react"
 
 interface CarouselProps {
-  mutate: Dispatch<SetStateAction<number>>
-  value: number
+  mutate: Dispatch<SetStateAction<string>>
   config: CarouselConfig
 }
 
-export default function Carousel({mutate, value, config} : CarouselProps) {
+export default function Carousel({mutate, config} : CarouselProps) {
   return (
     <div className="flex items-center justify-center gap-8">
       {config.map((carouselItem, carouselItemKey) => {
@@ -15,7 +14,7 @@ export default function Carousel({mutate, value, config} : CarouselProps) {
           <li
             key={carouselItemKey}
             className="group col-span-1 flex flex-col text-center h-[14rem] w-[5rem] bg-primary-50 shadow relative select-none hover:bg-primary-950 transition-all duration-200 ease-in-out"
-            onClick={() => {console.log(carouselItem.id), mutate(carouselItem.id)}}
+            onClick={() => {mutate(carouselItem.id)}}
           >
             <div className="flex flex-1 flex-col p-8">
               <div className="relative bottom-[-3rem] right-[7.4rem]">

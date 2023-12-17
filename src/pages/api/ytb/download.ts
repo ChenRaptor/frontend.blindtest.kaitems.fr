@@ -6,7 +6,7 @@ import fs from "fs"
 
 ffmpeg.setFfmpegPath(ffmpegPath as string);
 
-const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
+const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string, start: number) => {
   const videoStream = ytdl(videoUrl, { quality: 'highestaudio' });
 
   const outputPath = path.join(process.cwd(), 'public', 'audio', `${outputFileName}.mp3`);
@@ -16,7 +16,7 @@ const downloadAndConvertToMP3 = (videoUrl: string, outputFileName: string) => {
     .audioCodec('libmp3lame')
     .audioBitrate(320)
     .toFormat('mp3')
-    .setStartTime(0) // Définir le début à 0 secondes
+    .setStartTime(start) // Définir le début à 0 secondes
     .duration(20)   // Définir la durée à 20 secondes
     .on('end', () => {
       console.log('Conversion finished.');
@@ -32,9 +32,12 @@ export default async function handler(req: any, res: any) {
   console.log(req.body)
   const youtubeVideoUrl = `https://www.youtube.com/watch?v=${req.body.id}`;
   const outputFileName = req.body.id; // Nom du fichier sans extension
+
+  const start = req.body.started_at; // La vidéo commence à ...
+  console.log(start);
   
   
-  downloadAndConvertToMP3(youtubeVideoUrl, outputFileName);
+  downloadAndConvertToMP3(youtubeVideoUrl, outputFileName, start);
 
   // Chemin du fichier audio.json dans le dossier public/json
   const filePath = path.join(process.cwd(), 'public', 'json', 'audio.json');

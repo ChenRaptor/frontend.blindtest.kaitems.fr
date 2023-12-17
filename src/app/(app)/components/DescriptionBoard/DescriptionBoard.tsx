@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Chrono from "../Chrono/Chrono";
 import { MouseEventHandler } from "react";
+import { carouselConfigItem } from "../../page";
 
 interface DescriptionBoardProps {
-  config: any
+  config: carouselConfigItem
   party: boolean
   handlerStartGame: MouseEventHandler<HTMLElement>
   startGame: boolean
