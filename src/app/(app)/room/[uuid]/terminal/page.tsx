@@ -33,6 +33,7 @@ export default function Terminal({ params }: PhonePageProps) {
 
   const socketActions = async () => {
     socket.emit("launchGame", {room: params.uuid});
+    socket.emit("player-response", {room: params.uuid, response: "terminal"});
     socket.on("terminalJoinRoom", ({room}) => console.log(room));
     socket.on("game-status", (gameStatus: GameStatus) => {setGameStatusPage(gameStatus)});
   }

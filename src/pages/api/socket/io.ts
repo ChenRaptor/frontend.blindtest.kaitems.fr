@@ -115,7 +115,7 @@ async function handlePlayerResponse(socket: any, room: string, io: any, correctR
   }
 
   //TODO
-  socket.on(`player-response-${room}`, (res : any) =>  console.log(res));
+  // socket.on(`player-response-${room}`, (res : any) =>  console.log(res));
 
   await startCountdown(io, room, gameStatus);
 };
@@ -192,8 +192,22 @@ export default function SocketHandler( req: NextApiRequest, res: NextApiResponse
     socket.on('enterRoom', handleEnterRoom(io, socket));
 
     socket.on("launchGame", ({room}: {room: string}) => {
+
+      getSocketsInRoom(io, room)
+        .then(res => {
+          res.forEach((socket2: any) => { // Add type annotation 'any' to socket2
+            socket2.on("player-response", (res : any) =>  console.log(res));
+          })
+        })
+        
       startGameRound(io, room, socket)
     });
+
+
+    // socket.on("player-response", function({room, response} : any) {
+    //   // Émettre l'événement à tous les clients de la room
+    //   io.to(room).emit("player-response", response);
+    // });
 
 
 
