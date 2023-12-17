@@ -16,7 +16,7 @@ export default function Terminal({ params }: PhonePageProps) {
 
   const socketActions = async () => {
     socket.emit("launchGame", {room: params.uuid, mode: searchParams?.get('type')});
-    socket.emit("player-response", {room: params.uuid, response: "terminal"});
+    //socket.emit("player-response", {room: params.uuid, response: "terminal"});
     socket.on("terminalJoinRoom", ({room}) => console.log(room));
     socket.on("game-status", (gameStatus: GameStatus) => {setGameStatusPage(gameStatus)});
   }
@@ -55,9 +55,9 @@ export default function Terminal({ params }: PhonePageProps) {
               <h2 className='text-4xl mb-4'>Question 1</h2>
               <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
 
-                <AudioPlayer path={gameStatusPage?.response.step?.musiqueLink as string}/>
+              <AudioPlayer path={gameStatusPage?.response.step?.musiqueLink as string}/>
 
-                              <div className="h-96 flex items-center justify-center mx-auto">
+              <div className="h-96 flex items-center justify-center mx-auto">
                 <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={2}/>
               </div>
               <p>Répondez sur votre téléphone</p>

@@ -100,7 +100,7 @@ export default function Phone({ params }: PhonePageProps) {
               {
                 gameStatusPage.response.step?.options.map((answer) => 
                   <Button key={answer} onClick={() => { 
-                    socket.emit("player-response", {room: params.uuid, response: answer});
+                    socket.emit("player-response", {answer, playerIdWhoAnswered: socket.id});
                   }}>{answer}</Button>
                 )
               }

@@ -4,6 +4,8 @@ import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/type"
 import { getSocketsData, getSocketsInRoom, handleEnterRoom } from "@/lib/socket";
 import path from "path";
+import { Server as SocketIOServer } from "socket.io";
+
 
 export interface ObjectAudio {
   id: string,
@@ -25,16 +27,32 @@ export interface GameStatus {
     players: {
       id: string,
       username: string,
-      score: number
+      score: number,
+      currentResponse: string
     }[]
   }
 }
+
+export type JsonContent = {
+  id: string,
+  title: string,
+  associated_piece: string,
+  tag: string,
+  imageUrl: string | null
+}
+
+export interface ServerStateData {
+  sockets: any[],
+  room: string,
+  io: SocketIOServer
+}
+
 
 // Constante pour le chemin du fichier JSON
 const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json');
 
 // Methode pour lancer le compte à rebours
-function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<void> {
+function startCountdown(gameStatus: GameStatus, {room, io}: ServerStateData): Promise<void> {
   return new Promise((resolve) => {
     
     let secondsLeft : number = 15;
@@ -43,7 +61,7 @@ function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<
         secondsLeft = 5;
         break;
       case "game-in-progress":
-        secondsLeft = 2;
+        secondsLeft = 15;
         break;
     }
     
@@ -65,7 +83,7 @@ function startCountdown(io: any, room: string, gameStatus: GameStatus): Promise<
 }
 
 // Methode pour récupérer un élément aléatoire dans un tableau
-function getRandomUniqueElement(array: any[], selectedElements: any[]): any | undefined {
+function getCorrectObjectAudio(array: any[], selectedElements: any[]): any | undefined {
   if (array.length === 0) {
     return undefined; // Le tableau est vide, aucun élément disponible
   }
@@ -80,7 +98,7 @@ function getRandomUniqueElement(array: any[], selectedElements: any[]): any | un
 }
 
 // Methode pour récupérer des éléments aléatoires dans un tableau
-function getUniqueRandomElements(array: any[], randomElement: any, count: number): any[] {
+function getWrongResponse(array: any[], randomElement: any, count: number): any[] {
   const newArray = [...array]
   const uniqueRandomElements: any[] = [];
 
@@ -97,90 +115,146 @@ function getUniqueRandomElements(array: any[], randomElement: any, count: number
   return uniqueRandomElements;
 }
 
-async function handlePlayerResponse(socket: any, room: string, io: any, correctResponse: string, gameStatus: GameStatus) {
 
-  console.log(`player-response-${room}`)
+/**
+ * Handles player responses during a game round.
+ * 
+ * @param correctResponse - The correct response to compare player responses against.
+ * @param gameStatus - The current game status including player information.
+ * @param serverStateData - Data containing sockets, room, and io necessary for communication.
+ * @returns {Promise<void>} - A Promise that resolves once player responses are handled.
+ */
 
-  const responseValidator = ({answer, playerIdWhoAnswered}: {answer: string, playerIdWhoAnswered: string}) => {
-    console.log("answer,correctResponse")
-    console.log(answer,correctResponse)
-    const isCorrect = answer === correctResponse;
+async function handlePlayerResponse(
+  correctResponse: string,
+  gameStatus: GameStatus,
+  { sockets, room, io }: ServerStateData
+): Promise<void> {
 
-    if (isCorrect) {
-      const playerIndex = gameStatus.response.players.findIndex((player: any) => player.id === playerIdWhoAnswered);
-      if (playerIndex !== -1) {
-        gameStatus.response.players[playerIndex].score += 1;
-      }
+    /**
+   * Validates a player's response and updates the current response in the game status.
+   * 
+   * @param {string} answer - The player's response.
+   * @param {string} playerIdWhoAnswered - The ID of the player who provided the response.
+   */
+
+  const getPlayerResponse = ({answer, playerIdWhoAnswered}: {answer: string, playerIdWhoAnswered: string}) => {
+    const playerIndex = gameStatus.response.players.findIndex((player) => player.id === playerIdWhoAnswered);
+    if (playerIndex !== -1) {
+      gameStatus.response.players[playerIndex].currentResponse = answer;
     }
   }
 
-  //TODO
-  // socket.on(`player-response-${room}`, (res : any) =>  console.log(res));
+  // Adds event listener for "player-response" for each socket
+  sockets.forEach((socket) => {
+    socket.on("player-response", getPlayerResponse);
+  })
 
-  await startCountdown(io, room, gameStatus);
+  // Starts the response countdown (15 seconds)
+  await startCountdown(gameStatus, {sockets, room, io});
+
+  // Removes event listener for "player-response" for each socket
+  sockets.forEach((socket) => {
+    socket.off("player-response", getPlayerResponse);
+  })
+
+  // Checks player responses and awards points
+  gameStatus.response.players.forEach((player) => {
+    if (player.currentResponse === correctResponse) {
+      player.score += 1;
+    }
+  })
 };
 
 
-// Methode pour lancer une partie
-async function startGameRound(io: any, room: string, socket: any, mode: string) {
 
-  const sockets = await getSocketsInRoom(io, room)
-  const userSockets = getSocketsData(sockets)
-  const players = userSockets.map((player) => ({...player, score: 0}))
 
-  let gameStatus : GameStatus = {
+
+
+async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameStatus, serverStateData: ServerStateData) {
+  const selectedElements: any[] = [];
+  for (let i = 0; i < 2; i++) {
+    const objectAudio : ObjectAudio = getCorrectObjectAudio(categoryData, selectedElements);
+
+    const correctResponse : string = objectAudio.associated_piece;
+    const wrongResponses : string[] = getWrongResponse(categoryData, objectAudio.id, 3)
+    
+    const allElementsToMix = [correctResponse, ...wrongResponses];
+    const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
+    console.log(mixedResponse)
+
+    gameStatus.currentStep = "game-in-progress"
+    gameStatus.response.step = {
+      question: "Cette musique est associée à quel série ?",
+      musiqueLink: `/audio/${objectAudio.id}.mp3`,
+      options: mixedResponse,
+    }
+
+    await handlePlayerResponse(correctResponse, gameStatus, serverStateData);
+  }
+}
+
+
+
+
+/**
+ * Starts a game round, including countdowns and gameplay.
+ * 
+ * @param io - The Socket.IO server instance.
+ * @param room - The name of the room for the game.
+ * @param mode - The mode or category of the game.
+ * @returns {Promise<void>} - A Promise that resolves once the game round is completed.
+ */
+async function startGameRound(io: SocketIOServer, room: string, mode: string): Promise<void> {
+  // Retrieves sockets in the room
+  const sockets = await getSocketsInRoom(io, room);
+
+  // Retrieves data from the sockets
+  const userSockets = getSocketsData(sockets);
+
+  // Creates players
+  const players = userSockets.map((player) => ({ ...player, score: 0, currentResponse: null }));
+
+  // Creates the gameStatus object
+  let gameStatus: GameStatus = {
     currentStep: "launching-game-countdown",
     response: {
-      players
-    }
+      players,
+    },
   };
 
-  await startCountdown(io, room, gameStatus);
+  // Creates the serverStateData object
+  let serverStateData: ServerStateData = {
+    sockets,
+    room,
+    io,
+  };
 
-  const jsonContent : {[key: string]: any} = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
-  const arrayTag = jsonContent[mode];
+  // Starts the launch game countdown (5 seconds)
+  await startCountdown(gameStatus, serverStateData);
 
-  const selectedElements: any[] = [];
+  // Retrieves data from the audio.json file
+  const categoryData: Array<JsonContent> | undefined = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'))[mode];
 
-  if (arrayTag) {
-    for (let i = 0; i < 2; i++) {
-      const objectAudio : ObjectAudio = getRandomUniqueElement(arrayTag, selectedElements);
-  
-      const correctResponse : string = objectAudio.associated_piece;
-      const wrongResponses : string[] = getUniqueRandomElements(arrayTag, objectAudio.id, 3)
-      
-      const allElementsToMix = [correctResponse, ...wrongResponses];
-      const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
-      console.log(mixedResponse)
-  
-      gameStatus = {
-        currentStep: "game-in-progress",
-        response: {
-          step: {
-            question: "Cette musique est associée à quel série ?",
-            musiqueLink: objectAudio.id,
-            options: mixedResponse,
-          },
-          countdown: 15,
-          players: [
-            {id: "player1", username: "", score: 0},
-            {id: "player2", username: "", score: 0},
-            {id: "player3", username: "", score: 0},
-            {id: "player4", username: "", score: 0},
-          ]
-        }
-      };
-      await handlePlayerResponse(socket, room, io, correctResponse, gameStatus);
-  }
-  
+  // Checks that the categoryData array is defined
+  if (categoryData === undefined) {
+    throw new Error("The categoryData array is undefined. Please check the JSON data.");
+  } else {
+    // Starts the game
+    await gameInProgess(categoryData, gameStatus, serverStateData);
   }
 
-  // Affichage du score
+  // Displays the final score
+  gameStatus.currentStep = "game-completed";
 
-  gameStatus.currentStep = "game-completed"
-
+  // Sends the gameStatus to all sockets in the room
   io.to(room).emit('game-status', gameStatus);
 }
+
+
+
+
+
 
 export default function SocketHandler( req: NextApiRequest, res: NextApiResponseServerIo ) {
 
@@ -189,32 +263,15 @@ export default function SocketHandler( req: NextApiRequest, res: NextApiResponse
     return;
   }
 
-  const io = new Server(res.socket.server as any);
+  const io : SocketIOServer = new Server(res.socket.server as any);
   res.socket.server.io = io;
 
   const onConnection = (socket: any) => {
     socket.on('enterRoom', handleEnterRoom(io, socket));
-
-    socket.on("launchGame", ({room, mode}: {room: string, mode: string}) => {
-
-      getSocketsInRoom(io, room)
-        .then(res => {
-          res.forEach((socket2: any) => { // Add type annotation 'any' to socket2
-            socket2.on("player-response", (res : any) =>  console.log(res));
-          })
-        })
-        
-      startGameRound(io, room, socket, mode)
-    });
-
-
-    // socket.on("player-response", function({room, response} : any) {
-    //   // Émettre l'événement à tous les clients de la room
-    //   io.to(room).emit("player-response", response);
-    // });
-
-
-
+    socket.on("launchGame", ({room, mode}: {
+      room: string, 
+      mode: string
+    }) => startGameRound(io, room, mode));
   };
 
   io.on("connection", onConnection);
