@@ -19,6 +19,7 @@ export interface GameStatus {
   currentStep: string,
   response: {
     step?: {
+      questionNumero: number,
       question: string,
       musiqueLink: string,
       options: string[]
@@ -28,6 +29,12 @@ export interface GameStatus {
       id: string,
       username: string,
       score: number,
+      history: {
+        playerAnswer: string,
+        isCorrect: boolean
+        timeToAnswer: number
+        rank: number | null
+      }[],
       currentResponse: string
     }[]
   }
@@ -131,7 +138,10 @@ async function handlePlayerResponse(
   { sockets, room, io }: ServerStateData
 ): Promise<void> {
 
-    /**
+  const startedTimestampStep = new Date().getTime();
+
+
+  /**
    * Validates a player's response and updates the current response in the game status.
    * 
    * @param {string} answer - The player's response.
@@ -139,9 +149,17 @@ async function handlePlayerResponse(
    */
 
   const getPlayerResponse = ({answer, playerIdWhoAnswered}: {answer: string, playerIdWhoAnswered: string}) => {
+    const timestamp = new Date().getTime();
+
     const playerIndex = gameStatus.response.players.findIndex((player) => player.id === playerIdWhoAnswered);
     if (playerIndex !== -1) {
       gameStatus.response.players[playerIndex].currentResponse = answer;
+      gameStatus.response.players[playerIndex].history[(gameStatus.response.step as any).questionNumero - 1] = {
+        playerAnswer: answer,
+        isCorrect: answer === correctResponse,
+        timeToAnswer: timestamp - startedTimestampStep,
+        rank: null
+      };
     }
   }
 
@@ -158,6 +176,39 @@ async function handlePlayerResponse(
     socket.off("player-response", getPlayerResponse);
   })
 
+  /*
+  // Sorts players by time to answer and attaches rank to each player and atributs points
+  gameStatus.response.players.sort((a, b) => {
+    const aTimeToAnswer = a.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
+    const bTimeToAnswer = b.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
+
+    if (aTimeToAnswer < bTimeToAnswer) {
+      return -1;
+    } else if (aTimeToAnswer > bTimeToAnswer) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }).forEach((player, index) => {
+    player.history[(gameStatus.response.step as any).questionNumero - 1].rank = index + 1;
+  });
+
+  // Adds points to players in function of their rank
+  gameStatus.response.players.forEach((player) => {
+    switch (player.history[(gameStatus.response.step as any).questionNumero - 1].rank) {
+      case 1:
+        player.score += 3;
+        break;
+      case 2:
+        player.score += 2;
+        break;
+      case 3:
+        player.score += 1;
+        break;
+    }
+  });
+  */
+ 
   // Checks player responses and awards points
   gameStatus.response.players.forEach((player) => {
     if (player.currentResponse === correctResponse) {
@@ -185,6 +236,7 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
 
     gameStatus.currentStep = "game-in-progress"
     gameStatus.response.step = {
+      questionNumero: i + 1,
       question: "Cette musique est associée à quel série ?",
       musiqueLink: `/audio/${objectAudio.id}.mp3`,
       options: mixedResponse,
@@ -205,6 +257,7 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
  * @param mode - The mode or category of the game.
  * @returns {Promise<void>} - A Promise that resolves once the game round is completed.
  */
+
 async function startGameRound(io: SocketIOServer, room: string, mode: string): Promise<void> {
   // Retrieves sockets in the room
   const sockets = await getSocketsInRoom(io, room);
@@ -233,8 +286,19 @@ async function startGameRound(io: SocketIOServer, room: string, mode: string): P
   // Starts the launch game countdown (5 seconds)
   await startCountdown(gameStatus, serverStateData);
 
-  // Retrieves data from the audio.json file
-  const categoryData: Array<JsonContent> | undefined = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'))[mode];
+  let categoryData : Array<JsonContent> | undefined;
+
+  if (mode === "aleatoire") {
+    const JsonFileParsed = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
+
+    for (const [key, value] of Object.entries(JsonFileParsed)) {
+      categoryData = [...(categoryData ?? []), ...value as Array<JsonContent>]
+    }
+  }
+  else {
+    // Retrieves data from the audio.json file
+    categoryData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'))[mode];
+  }
 
   // Checks that the categoryData array is defined
   if (categoryData === undefined) {
