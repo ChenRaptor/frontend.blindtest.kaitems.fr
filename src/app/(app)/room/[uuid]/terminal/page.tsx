@@ -79,10 +79,17 @@ export default function Terminal({ params }: PhonePageProps) {
                     </li>
                     {gameStatusPage.response.players.map((player) => (
                       <li key={player.id} className="flex justify-between gap-x-6 py-5">
-                        <div className="flex items-center justify-center min-w-0 gap-x-4">
-                          <div className="min-w-0 flex items-center justify-center">
-                            <p className="text-sm font-semibold leading-6 text-gray-900">{player.username}</p>
-                          </div>
+                        <div className="min-w-0 flex items-center justify-center">
+                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.username}</p>
+                        </div>
+                        <div className="min-w-0 flex items-center justify-center">
+                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.averageTimeToAnswer + "s"}</p>
+                        </div>
+                        <div className="min-w-0 flex items-center justify-center">
+                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.correctAnswers}</p>
+                        </div>
+                        <div className="min-w-0 flex items-center justify-center">
+                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.incorrectAnswers}</p>
                         </div>
                         <div className="min-w-0 flex items-center justify-center">
                           <p className="text-sm font-semibold leading-6 text-gray-900">{player.score}</p>

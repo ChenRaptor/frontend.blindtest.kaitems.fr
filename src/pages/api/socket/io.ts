@@ -29,6 +29,9 @@ export interface GameStatus {
       id: string,
       username: string,
       score: number,
+      averageTimeToAnswer: number,
+      correctAnswers: number,
+      incorrectAnswers: number,
       history: {
         playerAnswer: string,
         isCorrect: boolean
@@ -141,6 +144,15 @@ async function handlePlayerResponse(
   const startedTimestampStep = new Date().getTime();
 
 
+  gameStatus.response.players.forEach((player) => {
+    player.history[(gameStatus.response.step as any).questionNumero - 1] = {
+      playerAnswer: "",
+      isCorrect: false,
+      timeToAnswer: 15000,
+      rank: null
+    };
+  })
+
   /**
    * Validates a player's response and updates the current response in the game status.
    * 
@@ -176,9 +188,15 @@ async function handlePlayerResponse(
     socket.off("player-response", getPlayerResponse);
   })
 
-  /*
+  
   // Sorts players by time to answer and attaches rank to each player and atributs points
+  // TODO rank 3 pour 1er pas normal
   gameStatus.response.players.sort((a, b) => {
+
+    if (!a.history[(gameStatus.response.step as any).questionNumero - 1].isCorrect) {
+      return -1;
+    }
+
     const aTimeToAnswer = a.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
     const bTimeToAnswer = b.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
 
@@ -190,31 +208,46 @@ async function handlePlayerResponse(
       return 0;
     }
   }).forEach((player, index) => {
-    player.history[(gameStatus.response.step as any).questionNumero - 1].rank = index + 1;
+
+    if (!player.history[(gameStatus.response.step as any).questionNumero - 1].isCorrect) {
+      player.history[(gameStatus.response.step as any).questionNumero - 1].rank = -1;
+      player.incorrectAnswers += 1;
+    }
+    else {
+      player.history[(gameStatus.response.step as any).questionNumero - 1].rank = index + 1;
+      player.correctAnswers += 1;
+    }
+    
   });
 
   // Adds points to players in function of their rank
   gameStatus.response.players.forEach((player) => {
     switch (player.history[(gameStatus.response.step as any).questionNumero - 1].rank) {
       case 1:
+        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+3")
         player.score += 3;
         break;
       case 2:
+        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+2")
         player.score += 2;
         break;
       case 3:
+        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+1")
         player.score += 1;
+        break;
+      default:
+        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+0")
+        player.score += 0;
         break;
     }
   });
-  */
- 
+
   // Checks player responses and awards points
-  gameStatus.response.players.forEach((player) => {
-    if (player.currentResponse === correctResponse) {
-      player.score += 1;
-    }
-  })
+  // gameStatus.response.players.forEach((player) => {
+  //   if (player.currentResponse === correctResponse) {
+  //     player.score += 1;
+  //   }
+  // })
 };
 
 
@@ -266,7 +299,15 @@ async function startGameRound(io: SocketIOServer, room: string, mode: string): P
   const userSockets = getSocketsData(sockets);
 
   // Creates players
-  const players = userSockets.map((player) => ({ ...player, score: 0, currentResponse: null }));
+  const players = userSockets.map((player) => ({ 
+    ...player, 
+    score: 0, 
+    averageTimeToAnswer: null,
+    correctAnswers: 0,
+    incorrectAnswers: 0,
+    history: [], 
+    currentResponse: null 
+  }));
 
   // Creates the gameStatus object
   let gameStatus: GameStatus = {
@@ -310,6 +351,10 @@ async function startGameRound(io: SocketIOServer, room: string, mode: string): P
 
   // Displays the final score
   gameStatus.currentStep = "game-completed";
+
+  gameStatus.response.players.forEach((player) => {
+    player.averageTimeToAnswer = (Math.floor((player.history.reduce((acc, curr) => acc + curr.timeToAnswer, 0) / player.history.length)/10))/100;
+  })
 
   // Sends the gameStatus to all sockets in the room
   io.to(room).emit('game-status', gameStatus);
