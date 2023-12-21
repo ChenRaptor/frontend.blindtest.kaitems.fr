@@ -257,7 +257,7 @@ async function handlePlayerResponse(
 
 async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameStatus, serverStateData: ServerStateData) {
   const selectedElements: any[] = [];
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 10; i++) {
     const objectAudio : ObjectAudio = getCorrectObjectAudio(categoryData, selectedElements);
 
     const correctResponse : string = objectAudio.associated_piece;
