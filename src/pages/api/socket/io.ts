@@ -196,52 +196,45 @@ async function handlePlayerResponse(
 
   
   // Sorts players by time to answer and attaches rank to each player and atributs points
-  // TODO rank 3 pour 1er pas normal
+  // TODO rank 3 pour 1er pas normal 
+
+
   gameStatus.response.players.sort((a, b) => {
-
-    if (!a.history[(gameStatus.response.step as any).questionNumero - 1].isCorrect) {
-      return -1;
-    }
-
     const aTimeToAnswer = a.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
     const bTimeToAnswer = b.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
+    return aTimeToAnswer - bTimeToAnswer;
+  });
+  
 
-    if (aTimeToAnswer < bTimeToAnswer) {
-      return -1;
-    } else if (aTimeToAnswer > bTimeToAnswer) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }).forEach((player, index) => {
+  gameStatus.response.players.forEach((player, index) => {
 
     if (!player.history[(gameStatus.response.step as any).questionNumero - 1].isCorrect) {
-      player.history[(gameStatus.response.step as any).questionNumero - 1].rank = -1;
       player.incorrectAnswers += 1;
     }
     else {
-      player.history[(gameStatus.response.step as any).questionNumero - 1].rank = index + 1;
       player.correctAnswers += 1;
     }
+    player.history[(gameStatus.response.step as any).questionNumero - 1].rank = index + 1;
   });
 
+  
   // Adds points to players in function of their rank
   gameStatus.response.players.forEach((player) => {
+    if (!player.history[(gameStatus.response.step as any).questionNumero - 1].isCorrect) {
+      player.score += 0;
+      return
+    }
     switch (player.history[(gameStatus.response.step as any).questionNumero - 1].rank) {
       case 1:
-        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+3")
         player.score += 3;
         break;
       case 2:
-        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+2")
         player.score += 2;
         break;
       case 3:
-        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+1")
         player.score += 1;
         break;
       default:
-        console.log(gameStatus.response.step?.questionNumero, player, player.history[(gameStatus.response.step as any).questionNumero - 1].rank, "+0")
         player.score += 0;
         break;
     }
@@ -263,7 +256,6 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
     
     const allElementsToMix = [correctResponse, ...wrongResponses];
     const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
-    console.log(mixedResponse)
 
     gameStatus.currentStep = "game-in-progress"
     gameStatus.response.step = {
