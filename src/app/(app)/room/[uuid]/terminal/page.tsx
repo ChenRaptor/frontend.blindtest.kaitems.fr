@@ -6,6 +6,7 @@ import { GameStatus } from "@/pages/api/socket/io";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
 import Image from "next/image";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -32,7 +33,9 @@ export default function Terminal({ params }: PhonePageProps) {
           <p className="text-2xl font-semibold">Terminal</p>
         </div>
         <ul className="bg-primary-50 rounded-b-xl">
-          {(gameStatusPage?.response?.players ?? []).map(player => 
+          {(gameStatusPage?.response?.players ?? []).sort((a,b) => {
+            return a.score > b.score ? -1 : 1
+          }).map(player => 
             <li key={player.id} className="flex items-center justify-between p-4 gap-4">
               <div className="w-8 aspect-square bg-primary-800 rounded-full"></div>
               <div className="flex items-center justify-between gap-4 w-full h-">
@@ -45,14 +48,14 @@ export default function Terminal({ params }: PhonePageProps) {
       </div>
 
       {gameStatusPage?.currentStep === "launching-game-countdown" &&
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center h-full w-full">
           <h2 className='text-6xl'>Launching game ...</h2>
           <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={5}/>
         </div>
       }
 
       {gameStatusPage?.currentStep === "game-in-progress" &&
-        <div className="flex items-center justify-center h-full flex-col">
+        <div className="flex items-center justify-center h-full flex-col w-full">
           <h2 className='text-4xl mb-4'>Question {gameStatusPage?.response.step?.questionNumero}</h2>
           <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
           <AudioPlayer path={gameStatusPage?.response.step?.musiqueLink as string}/>
@@ -65,7 +68,7 @@ export default function Terminal({ params }: PhonePageProps) {
       }
 
       {gameStatusPage?.currentStep === "game-reveal-response" &&
-        <div className="flex items-center justify-center h-full flex-col">
+        <div className="flex items-center justify-center h-full flex-col w-full">
           <h2 className='text-4xl mb-4'>Question {gameStatusPage?.response.step?.questionNumero}</h2>
           <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
 
@@ -85,32 +88,35 @@ export default function Terminal({ params }: PhonePageProps) {
           <CardContent className="px-6 pb-2">
             <ul role="list" className="divide-y divide-primary-300">
               <li className='py-4 flex justify-between'>
-                <span>Pseudo</span>
-                <span>&#9201; moy.</span>
-                <span>&#9989;</span>
-                <span>&#10060;</span>
-                <span>&#129351;</span>
+                <span className="min-w-0 flex items-center justify-center flex-1">Pseudo</span>
+                <span className="min-w-0 flex items-center justify-center flex-1">&#9201; moy.</span>
+                <span className="min-w-0 flex items-center justify-center flex-1">&#9989;</span>
+                <span className="min-w-0 flex items-center justify-center flex-1">&#10060;</span>
+                <span className="min-w-0 flex items-center justify-center flex-1">&#129351;</span>
               </li>
-              {gameStatusPage.response.players.map((player) => (
+              {gameStatusPage.response.players.sort((a,b) => {
+                return a.score > b.score ? -1 : 1
+              }).map((player) => (
                 <li key={player.id} className="flex justify-between gap-x-6 py-5">
-                  <div className="min-w-0 flex items-center justify-center">
+                  <div className="min-w-0 flex items-center justify-center flex-1">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{player.username}</p>
                   </div>
-                  <div className="min-w-0 flex items-center justify-center">
+                  <div className="min-w-0 flex items-center justify-center flex-1">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{player.averageTimeToAnswer + "s"}</p>
                   </div>
-                  <div className="min-w-0 flex items-center justify-center">
+                  <div className="min-w-0 flex items-center justify-center flex-1">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{player.correctAnswers}</p>
                   </div>
-                  <div className="min-w-0 flex items-center justify-center">
+                  <div className="min-w-0 flex items-center justify-center flex-1">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{player.incorrectAnswers}</p>
                   </div>
-                  <div className="min-w-0 flex items-center justify-center">
+                  <div className="min-w-0 flex items-center justify-center flex-1">
                     <p className="text-sm font-semibold leading-6 text-gray-900">{player.score}</p>
                   </div>
                 </li>
               ))}
             </ul>
+            <Link href="/">Retour à l&apos;accueil</Link>
           </CardContent>
         </Card>
       }

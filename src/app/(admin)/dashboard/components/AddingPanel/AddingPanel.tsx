@@ -67,6 +67,16 @@ const config : Config = {
         min: 0,
         max: 255
       }
+    },
+    {
+      name: "imageUrl",
+      type: "text",
+      label: "URL de l'image",
+      placeholder: "",
+      schema: {
+        min: 0,
+        max: 255
+      }
     }
   ]
 }

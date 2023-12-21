@@ -48,7 +48,6 @@ export default async function handler(req: any, res: any) {
   // Mettre à jour le tableau avec les données de req.body
   currentContent[req.body.tag].push({
     ...req.body,
-    imageUrl: null
   });
 
   // Réécrire le fichier avec le contenu mis à jour

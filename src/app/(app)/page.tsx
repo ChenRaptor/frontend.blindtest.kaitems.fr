@@ -12,6 +12,7 @@ import { redirect } from "next/navigation";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
 
+
 export interface carouselConfigItem {
   id: string
   title: string
@@ -63,7 +64,13 @@ export default function Home() {
   const [quickResponseCode, setQuickResponseCode] = useState<QRCode | null>(null)
   const { value: startGame, toggle: toggleStartGame } = useBoolean(false)
 
-  const [count, { startCountdown, stopCountdown, resetCountdown }] = useCountdown({
+  const handleRefresh = () => {
+    // LA METHODE LARACHE: https://www.la-rache.com
+    window.location.reload();
+  };
+
+
+  const [count, { startCountdown, resetCountdown }] = useCountdown({
     countStart: 5,
     intervalMs: 1000,
   })
@@ -89,8 +96,6 @@ export default function Home() {
   useEffect(() => {
     count === 0 && redirect(`${process.env.NEXT_PUBLIC_SITE_URL}/room/${link}/terminal?type=${option}`)
   },[count, option])
-
-  // TODO : Add an exit button pour select a new game type and generate a new QRCode on change option
   
   return (
     <main className='h-full w-full'>
@@ -103,7 +108,10 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-center xl:w-[384px]">
               {quickResponseCode ?
-                <QuickResponseCode url={quickResponseCode.url}/>
+                <div className="grid gap-8">
+                  <QuickResponseCode url={quickResponseCode.url}/>
+                  <Button onClick={handleRefresh}>Retour</Button>
+                </div>
                 :
                 <Button onClick={handlerQRCode}>Générer la partie</Button>
               }
@@ -114,9 +122,11 @@ export default function Home() {
           </div>
 
         </div>
-        <div className="px-4 py-4 sm:p-6">
-          <Carousel mutate={setOption} config={carouselConfig}/>
-        </div>
+        {!quickResponseCode?.url &&
+          <div className="px-4 py-4 sm:p-6">
+            <Carousel mutate={setOption} config={carouselConfig}/>
+          </div>
+        }
         <div className="px-4 py-4 sm:px-6 text-center">
           {quickResponseCode?.url &&
             <Link href={quickResponseCode.url} target="_blank">Lien</Link>

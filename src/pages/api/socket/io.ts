@@ -5,6 +5,7 @@ import { NextApiResponseServerIo } from "@/type"
 import { getSocketsData, getSocketsInRoom, handleEnterRoom } from "@/lib/socket";
 import path from "path";
 import { Server as SocketIOServer } from "socket.io";
+import { aborted } from 'util';
 
 
 export interface ObjectAudio {
@@ -194,17 +195,25 @@ async function handlePlayerResponse(
     socket.off("player-response", getPlayerResponse);
   })
 
-  
-  // Sorts players by time to answer and attaches rank to each player and atributs points
-  // TODO rank 3 pour 1er pas normal 
-
 
   gameStatus.response.players.sort((a, b) => {
-    const aTimeToAnswer = a.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
-    const bTimeToAnswer = b.history[(gameStatus.response.step as any).questionNumero - 1].timeToAnswer;
-    return aTimeToAnswer - bTimeToAnswer;
-  });
+
+    const questionNumero = (gameStatus.response.step as any).questionNumero - 1;
+
+    const aCorrect = a.history[questionNumero].isCorrect;
+    const bCorrect = b.history[questionNumero].isCorrect;
   
+    if (!aCorrect && bCorrect) {
+      return 1; // Move players who haven't answered correctly to the end
+    } else if (aCorrect && !bCorrect) {
+      return -1; // Keep players who have answered correctly at the beginning
+    } else {
+      // If both players have the same correctness status, sort based on time
+      const aTimeToAnswer = a.history[questionNumero].timeToAnswer;
+      const bTimeToAnswer = b.history[questionNumero].timeToAnswer;
+      return aTimeToAnswer - bTimeToAnswer;
+    }
+  });
 
   gameStatus.response.players.forEach((player, index) => {
 
