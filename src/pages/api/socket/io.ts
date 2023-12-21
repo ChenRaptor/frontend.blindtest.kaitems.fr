@@ -23,6 +23,7 @@ export interface GameStatus {
       question: string,
       musiqueLink: string,
       options: string[]
+      imageUrl: string | null
     },
     countdown?: number,
     players: {
@@ -65,7 +66,7 @@ const jsonFilePath = path.join(process.cwd(), 'public', 'json', 'audio.json');
 function startCountdown(gameStatus: GameStatus, {room, io}: ServerStateData): Promise<void> {
   return new Promise((resolve) => {
     
-    let secondsLeft : number = 15;
+    let secondsLeft : number = 20;
     switch (gameStatus.currentStep) {
       case "launching-game-countdown":
         secondsLeft = 5;
@@ -73,7 +74,12 @@ function startCountdown(gameStatus: GameStatus, {room, io}: ServerStateData): Pr
       case "game-in-progress":
         secondsLeft = 15;
         break;
+      case "game-reveal-response":
+        secondsLeft = 5;
+        break;
     }
+
+
     
     const countdownInterval = setInterval(() => {
       // Emit the countdown event to all sockets in the room
@@ -217,7 +223,6 @@ async function handlePlayerResponse(
       player.history[(gameStatus.response.step as any).questionNumero - 1].rank = index + 1;
       player.correctAnswers += 1;
     }
-    
   });
 
   // Adds points to players in function of their rank
@@ -241,13 +246,6 @@ async function handlePlayerResponse(
         break;
     }
   });
-
-  // Checks player responses and awards points
-  // gameStatus.response.players.forEach((player) => {
-  //   if (player.currentResponse === correctResponse) {
-  //     player.score += 1;
-  //   }
-  // })
 };
 
 
@@ -273,9 +271,17 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
       question: "Cette musique est associée à quel série ?",
       musiqueLink: `/audio/${objectAudio.id}.mp3`,
       options: mixedResponse,
+      imageUrl: null
     }
 
     await handlePlayerResponse(correctResponse, gameStatus, serverStateData);
+
+    gameStatus.currentStep = "game-reveal-response"
+    gameStatus.response.step.imageUrl = objectAudio.imageUrl;
+  
+    // Starts the response countdown (5 seconds)
+    await startCountdown(gameStatus, serverStateData);
+
   }
 }
 

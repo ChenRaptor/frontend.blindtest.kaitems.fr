@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { GameStatus } from "@/pages/api/socket/io";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,7 +17,6 @@ export default function Terminal({ params }: PhonePageProps) {
 
   const socketActions = async () => {
     socket.emit("launchGame", {room: params.uuid, mode: searchParams?.get('type')});
-    //socket.emit("player-response", {room: params.uuid, response: "terminal"});
     socket.on("terminalJoinRoom", ({room}) => console.log(room));
     socket.on("game-status", (gameStatus: GameStatus) => {setGameStatusPage(gameStatus)});
   }
@@ -43,64 +43,76 @@ export default function Terminal({ params }: PhonePageProps) {
           )}
         </ul>
       </div>
-      {
-        gameStatusPage?.currentStep === "launching-game-countdown" ? 
-          <div className="flex items-center justify-center h-full">
-            <h2 className='text-6xl'>Launching game ...</h2>
-            <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={5}/>
+
+      {gameStatusPage?.currentStep === "launching-game-countdown" &&
+        <div className="flex items-center justify-center h-full">
+          <h2 className='text-6xl'>Launching game ...</h2>
+          <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={5}/>
+        </div>
+      }
+
+      {gameStatusPage?.currentStep === "game-in-progress" &&
+        <div className="flex items-center justify-center h-full flex-col">
+          <h2 className='text-4xl mb-4'>Question {gameStatusPage?.response.step?.questionNumero}</h2>
+          <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
+          <AudioPlayer path={gameStatusPage?.response.step?.musiqueLink as string}/>
+
+          <div className="h-96 flex items-center justify-center mx-auto">
+            <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={15}/>
           </div>
-          :
-          gameStatusPage?.currentStep === "game-in-progress" ? 
-            <div className="flex items-center justify-center h-full flex-col">
-              <h2 className='text-4xl mb-4'>Question 1</h2>
-              <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
+          <p>Répondez sur votre téléphone</p>
+        </div>
+      }
 
-              <AudioPlayer path={gameStatusPage?.response.step?.musiqueLink as string}/>
+      {gameStatusPage?.currentStep === "game-reveal-response" &&
+        <div className="flex items-center justify-center h-full flex-col">
+          <h2 className='text-4xl mb-4'>Question {gameStatusPage?.response.step?.questionNumero}</h2>
+          <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
 
-              <div className="h-96 flex items-center justify-center mx-auto">
-                <Timer time={gameStatusPage?.response?.countdown ?? 0} totalTime={2}/>
-              </div>
-              <p>Répondez sur votre téléphone</p>
-            </div>
-            :
-            gameStatusPage?.currentStep === "game-completed" ?
-              <Card className="w-full overflow-hidden">
-                <CardHeader className="bg-primary-100">
-                  <CardTitle>ScoreBoard</CardTitle>
-                </CardHeader>
-                <CardContent className="px-6 pb-2">
-                  <ul role="list" className="divide-y divide-primary-300">
-                    <li className='py-4 flex justify-between'>
-                      <span>Pseudo</span>
-                      <span>&#9201; moy.</span>
-                      <span>&#9989;</span>
-                      <span>&#10060;</span>
-                      <span>&#129351;</span>
-                    </li>
-                    {gameStatusPage.response.players.map((player) => (
-                      <li key={player.id} className="flex justify-between gap-x-6 py-5">
-                        <div className="min-w-0 flex items-center justify-center">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.username}</p>
-                        </div>
-                        <div className="min-w-0 flex items-center justify-center">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.averageTimeToAnswer + "s"}</p>
-                        </div>
-                        <div className="min-w-0 flex items-center justify-center">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.correctAnswers}</p>
-                        </div>
-                        <div className="min-w-0 flex items-center justify-center">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.incorrectAnswers}</p>
-                        </div>
-                        <div className="min-w-0 flex items-center justify-center">
-                          <p className="text-sm font-semibold leading-6 text-gray-900">{player.score}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-              :
-              null
+          {gameStatusPage?.response.step?.imageUrl &&
+            <Image loader={({ src, width, quality }) => {
+              return `${src}?w=${width}&q=${quality || 50}`
+            }} src={gameStatusPage?.response.step?.imageUrl as string} alt="question image" width={200} height={200} className="rounded-xl shadow-xl my-4"/>
+          }
+        </div>
+      }
+
+      {gameStatusPage?.currentStep === "game-completed" &&
+        <Card className="w-full overflow-hidden">
+          <CardHeader className="bg-primary-100">
+            <CardTitle>ScoreBoard</CardTitle>
+          </CardHeader>
+          <CardContent className="px-6 pb-2">
+            <ul role="list" className="divide-y divide-primary-300">
+              <li className='py-4 flex justify-between'>
+                <span>Pseudo</span>
+                <span>&#9201; moy.</span>
+                <span>&#9989;</span>
+                <span>&#10060;</span>
+                <span>&#129351;</span>
+              </li>
+              {gameStatusPage.response.players.map((player) => (
+                <li key={player.id} className="flex justify-between gap-x-6 py-5">
+                  <div className="min-w-0 flex items-center justify-center">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{player.username}</p>
+                  </div>
+                  <div className="min-w-0 flex items-center justify-center">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{player.averageTimeToAnswer + "s"}</p>
+                  </div>
+                  <div className="min-w-0 flex items-center justify-center">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{player.correctAnswers}</p>
+                  </div>
+                  <div className="min-w-0 flex items-center justify-center">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{player.incorrectAnswers}</p>
+                  </div>
+                  <div className="min-w-0 flex items-center justify-center">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">{player.score}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       }
     </div>
   )
