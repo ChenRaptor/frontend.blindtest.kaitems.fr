@@ -119,7 +119,7 @@ export default function Home() {
         </div>
         <div className="px-4 py-4 sm:px-6 text-center">
           {quickResponseCode?.url &&
-            <Link href={quickResponseCode.url}>Lien</Link>
+            <Link href={quickResponseCode.url} target="_blank">Lien</Link>
           }
         </div>
       </div>
