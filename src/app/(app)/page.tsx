@@ -11,6 +11,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useSocket } from "@/providers/socket-provider";
 import { PhonePageProps } from "@/type";
+import Image from "next/image";
 
 
 export interface carouselConfigItem {
@@ -101,6 +102,7 @@ export default function Home() {
     <main className='h-full w-full'>
       <div className="flex flex-col h-full">
         <div className="mx-auto max-w-[120rem] px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center">
+          <Image src="/Certif_a_LARACHE_Antoine BONNEAU.jpeg" alt="logo" width={200} height={200}/>
 
           <div className="py-20 grid grid-cols-1 gap-20 lg:grid-cols-3">
             <div className="flex items-start flex-col">
