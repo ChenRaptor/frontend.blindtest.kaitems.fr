@@ -18,6 +18,7 @@ const AudioPlayer = ({ path }: { path: string }) => {
 
 
   function playAudio(fileName: string) {
+    
     const audio = new Audio(`/api/playAudio?fileName=${fileName}`);
     audio.play();
 
@@ -28,10 +29,10 @@ const AudioPlayer = ({ path }: { path: string }) => {
     <div className='invisible fixed'>
       <h2>Audio Player</h2>
       <div className="audio-player-container">
-        <audio ref={audioRef} controls autoPlay>
-          {/* <source src={path} type="audio/mp3" /> */}
+        {/* <audio ref={audioRef} controls autoPlay>
+          <source src={path} type="audio/mp3" />
           Votre navigateur ne prend pas en charge l&apos;élément audio.
-        </audio>
+        </audio> */}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ error: 'Missing or invalid fileName parameter' });
   }
 
-  const audioFilePath = path.join(process.cwd(), 'public', 'audio', fileName);
+  const audioFilePath = path.join(process.cwd(), 'public', 'audio', path.basename(fileName));
 
   if (!fs.existsSync(audioFilePath)) {
     return res.status(404).json({ error: 'File not found' });
