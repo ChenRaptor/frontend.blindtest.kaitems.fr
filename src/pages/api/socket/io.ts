@@ -25,6 +25,7 @@ export interface GameStatus {
       musiqueLink: string,
       options: string[]
       imageUrl: string | null
+      validResponse?: string
     },
     countdown?: number,
     players: {
@@ -285,7 +286,7 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
 
     gameStatus.currentStep = "game-reveal-response"
     gameStatus.response.step.imageUrl = objectAudio.imageUrl;
-  
+    gameStatus.response.step.validResponse = correctResponse;
     // Starts the response countdown (5 seconds)
     await startCountdown(gameStatus, serverStateData);
 

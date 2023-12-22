@@ -70,7 +70,7 @@ export default function Terminal({ params }: PhonePageProps) {
       {gameStatusPage?.currentStep === "game-reveal-response" &&
         <div className="flex items-center justify-center h-full flex-col w-full">
           <h2 className='text-4xl mb-4'>Question {gameStatusPage?.response.step?.questionNumero}</h2>
-          <p className='text-3xl'>{gameStatusPage?.response?.step?.question}</p>
+          <p className='text-3xl'>{gameStatusPage?.response?.step?.validResponse}</p>
 
           {gameStatusPage?.response.step?.imageUrl &&
             <Image loader={({ src, width, quality }) => {
