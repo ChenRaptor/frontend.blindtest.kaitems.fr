@@ -275,7 +275,7 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
     gameStatus.currentStep = "game-in-progress"
     gameStatus.response.step = {
       questionNumero: i + 1,
-      question: "Cette musique est associée à quelle oeuvres ?",
+      question: "Cette musique est associée à quelle oeuvre ?",
       musiqueLink,
       options: mixedResponse,
       imageUrl: null
