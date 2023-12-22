@@ -11,6 +11,7 @@ const AudioPlayer = ({ path }: { path: string }) => {
       audioRef.current.load(); // Charge à nouveau l'audio
       audioRef.current.play(); // Joue l'audio
     }
+    console.log(path)
   }, [path]);
 
   return (

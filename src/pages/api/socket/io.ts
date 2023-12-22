@@ -266,15 +266,22 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
     const allElementsToMix = [correctResponse, ...wrongResponses];
     const mixedResponse = allElementsToMix.sort(() => Math.random() - 0.5);
 
+    let musiqueLink = path.join(process.cwd(), 'public', 'audio', `${objectAudio.id}.mp3`);
+
+    if (process.env.METHOD_PATH) {
+      musiqueLink = "/audio/" + objectAudio.id + ".mp3"
+    }
+
+
     gameStatus.currentStep = "game-in-progress"
     gameStatus.response.step = {
       questionNumero: i + 1,
-      question: "Cette musique est associée à quel série ?",
-      musiqueLink: `/audio/${objectAudio.id}.mp3`,
+      question: "Cette musique est associée à quelle oeuvres ?",
+      musiqueLink,
       options: mixedResponse,
       imageUrl: null
     }
-
+    process.cwd(), 'public'
     await handlePlayerResponse(correctResponse, gameStatus, serverStateData);
 
     gameStatus.currentStep = "game-reveal-response"
