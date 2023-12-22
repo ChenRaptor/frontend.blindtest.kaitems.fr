@@ -6,20 +6,30 @@ const AudioPlayer = ({ path }: { path: string }) => {
 
   useEffect(() => {
     // Met à jour le chemin source de l'audio lorsque la prop path change
-    if (audioRef.current) {
-      audioRef.current.src = path;
-      audioRef.current.load(); // Charge à nouveau l'audio
-      audioRef.current.play(); // Joue l'audio
-    }
-    console.log(path)
+    // if (audioRef.current) {
+    //   audioRef.current.src = path;
+    //   audioRef.current.load(); // Charge à nouveau l'audio
+    //   audioRef.current.play(); // Joue l'audio
+    // }
+    // console.log(path)
+    console.log('test');
+    playAudio(path);
   }, [path]);
 
+
+  function playAudio(fileName: string) {
+    const audio = new Audio(`/api/playAudio?fileName=${fileName}`);
+    audio.play();
+
+    console.log(audio);
+  }
+  
   return (
     <div className='invisible fixed'>
       <h2>Audio Player</h2>
       <div className="audio-player-container">
         <audio ref={audioRef} controls autoPlay>
-          <source src={path} type="audio/mp3" />
+          {/* <source src={path} type="audio/mp3" /> */}
           Votre navigateur ne prend pas en charge l&apos;élément audio.
         </audio>
       </div>
