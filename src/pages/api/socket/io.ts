@@ -268,10 +268,9 @@ async function gameInProgess(categoryData: Array<JsonContent>, gameStatus: GameS
 
     let musiqueLink = path.join(process.cwd(), 'public', 'audio', `${objectAudio.id}.mp3`);
 
-    if (process.env.METHOD_PATH) {
+    if (process.env?.METHOD_PATH) {
       musiqueLink = "/audio/" + objectAudio.id + ".mp3"
     }
-
 
     gameStatus.currentStep = "game-in-progress"
     gameStatus.response.step = {
