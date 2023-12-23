@@ -14,7 +14,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!fs.existsSync(audioFilePath)) {
     return res.status(404).json({ error: 'File not found' });
   }
-
+  //aasas
   const stream = fs.createReadStream(audioFilePath);
 
   res.setHeader('Content-Type', 'audio/mpeg');
